@@ -37,8 +37,11 @@ namespace Agh.eSzachy
 
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseMySql(
+                    Configuration.GetConnectionString("DefaultConnection"), x =>
+                    x.ServerVersion(new System.Version(5, 5, 62), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql)
+                    
+                    ));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
