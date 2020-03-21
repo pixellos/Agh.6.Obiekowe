@@ -15,3 +15,7 @@ Set connection string in "C:\Users\rogoz\Source\Repos\Agh.6.Obiekowe\Agh.eSzachy
 
 cd \Agh.eSzachy
 dotnet ef database update
+
+# Run
+
+dotnet run --server.urls http://0.0.0.0:5001
