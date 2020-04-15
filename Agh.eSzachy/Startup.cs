@@ -27,18 +27,26 @@ namespace Agh.eSzachy
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            services.AddCors(options =>
             {
-                builder
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowAnyOrigin();
-            }));
+                options.AddPolicy(
+                    "AllowAny",
+                    x =>
+                    {
+                        x.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .SetIsOriginAllowed(isOriginAllowed: _ => true)
+                        .AllowCredentials();
+                    });
+            });
 
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseMySql(
+                    Configuration.GetConnectionString("DefaultConnection"), x =>
+                    x.ServerVersion(new System.Version(5, 5, 62), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql)
+
+                    ));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -68,7 +76,11 @@ namespace Agh.eSzachy
             });
 
 
-            services.AddSignalR();
+            services.AddSignalR(x =>
+            {
+
+                x.EnableDetailedErrors = true;
+            }).AddJsonProtocol();
             services.AddApplicationInsightsTelemetry();
         }
 
@@ -98,12 +110,13 @@ namespace Agh.eSzachy
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<ChatHub>("/chat");
-                endpoints.MapHub<RoomHub>("/room");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapHub<RoomHub>("/room");
             });
 
             app.UseSpa(spa =>

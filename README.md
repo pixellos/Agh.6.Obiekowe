@@ -1,20 +1,21 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Install 
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+# DotNetCore 3.1
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+# To set up
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## Google
+dotnet user-secrets set "Authentication:Google:ClientId" "480347143153-4a0dnbk4f9goh7dub02hnjr62tn5m7sq.apps.googleusercontent.com"
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+dotnet user-secrets set "Authentication:Google:ClientSecret" "o4RJdhpUdINijD2OxMO5dWGp"
+
+# To migrate db
+
+Set connection string in "C:\Users\rogoz\Source\Repos\Agh.6.Obiekowe\Agh.eSzachy\appsettings.json"
+
+cd \Agh.eSzachy
+dotnet ef database update
+
+# Run
+
+dotnet run --server.urls http://0.0.0.0:5001
