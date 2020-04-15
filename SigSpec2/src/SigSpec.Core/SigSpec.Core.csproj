@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <!-- Nuget-related properties -->
+  <PropertyGroup>
+    <Owners>Rico Suter</Owners>
+    <Authors>Rico Suter</Authors>
+    <Description>SigSpec Core package</Description>
+    <Version>0.1.2</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/RicoSuter/SigSpec</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/RicoSuter/SigSpec.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>SignalR CodeGeneration</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Namotion.Reflection" Version="1.0.8" />
+    <PackageReference Include="NJsonSchema" Version="10.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+</Project>
