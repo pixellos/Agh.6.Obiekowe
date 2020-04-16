@@ -17,14 +17,28 @@ namespace Agh
             this.RoomService = roomService;
         }
 
-        public Task Send(string message)
-        {
-            if (message == string.Empty)
-            {
-                return Clients.All.Send("hi");
-            }
+        Client User => new Client(Context.UserIdentifier);
 
-            return Clients.All.Send(message);
+        public Task Join(string roomId)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task Leave(string roomId)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task Send(string roomId, string message)
+        {
+            var m = RoomService.SendMessage(new Room { Id = roomId }, this.User, message);
+            m.Map(x =>
+            {
+                // Update all interested clients
+                return x;
+            });
+
+            return Task.CompletedTask;
         }
 
         public async override Task OnConnectedAsync()

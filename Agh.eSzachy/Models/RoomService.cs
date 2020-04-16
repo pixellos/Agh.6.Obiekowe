@@ -24,7 +24,8 @@ namespace Agh
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
-        public virtual ApplicationUser ClientId { get; set; }
+        public string ClientId { get; set; }
+        public virtual ApplicationUser Client { get; set; }
         public DateTime Date { get; set; }
         [StringLength(128)]
         public string Message { get; set; }
@@ -41,8 +42,23 @@ namespace Agh
 
         public Result<Unit> Join(Client c, Room r) => throw new System.NotImplementedException();
         public Result<Unit> Left(Client c, Room r) => throw new System.NotImplementedException();
-        public Result<Client[]> Members(Room r) => throw new System.NotImplementedException();
-        public Result<Unit> SendMessage(Room r, Client c, string m) => throw new System.NotImplementedException();
+        public Result<Unit> SendMessage(Room r, Client c, string m)
+        {
+            var room = this.DbContext.Rooms.FirstOrDefault(x => x.Id == r.Id);
+            if (room != null)
+            {
+                room.Messages.Add(new MessageEntity
+                {
+                    Date = DateTime.Now,
+                    ClientId = c.Id,
+                    Message = m
+                });
+                this.DbContext.SaveChanges();
+                return new Result<Unit>();
+            }
+            return new Result<Unit>(new ArgumentException(this.GetType().FullName, nameof(c)));
+        }
+
         public Result<Room[]> Status(Client c)
         {
             var basicRooms = new[]
@@ -60,7 +76,12 @@ namespace Agh
                 Id = x.Id,
                 Name = x.Title,
                 Created = x.CreateDate,
-
+                Messages = x.Messages.Select(x => new Message()
+                {
+                    UserId = x.Client.Id,
+                    Created = x.Date,
+                    Text = x.Message
+                }).ToList()
             }).ToArray().Concat(basicRooms).ToArray();
             return new Result<Room[]>(results);
         }
