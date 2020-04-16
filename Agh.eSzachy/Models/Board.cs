@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace HelloSignalR
+namespace Agh
 {
     public class Board
     {

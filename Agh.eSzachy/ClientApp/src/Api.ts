@@ -9,15 +9,18 @@ export class ChatHub {
     }
 
     registerCallbacks(implementation: IChatHubCallbacks) {
+        this.connection.on('Refresh', (r) => implementation.refresh(r));
         this.connection.on('Send', (message) => implementation.send(message));
     }
 
     unregisterCallbacks(implementation: IChatHubCallbacks) {
+        this.connection.off('Refresh', (r) => implementation.refresh(r));
         this.connection.off('Send', (message) => implementation.send(message));
     }
 }
 
 export interface IChatHubCallbacks {
+    refresh(r: Room[]): void;
     send(message: string): void;
 }
 
@@ -40,6 +43,12 @@ export class RoomHub {
 
 export interface IRoomHubCallbacks {
     roomStatus(message: string, messageType: MessageType): void;
+}
+
+export interface Room {
+    Id: string | undefined;
+    Name: string | undefined;
+    Created: Date;
 }
 
 export enum MessageType {

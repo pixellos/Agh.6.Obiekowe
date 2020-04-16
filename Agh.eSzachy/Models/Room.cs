@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HelloSignalR
+namespace Agh
 {
     public class Room
     {

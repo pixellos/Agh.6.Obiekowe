@@ -1,14 +1,11 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
 
-namespace HelloSignalR
+namespace Agh
 {
-    public interface IChatClient
-    {
-        Task Send(string message);
-    }
     public interface IRoomClient
     {
-        Task RoomStatus(string message, MessageType messageType);
+        Task Refresh(Room[] r);
+        Task Send(string message);
     }
 }

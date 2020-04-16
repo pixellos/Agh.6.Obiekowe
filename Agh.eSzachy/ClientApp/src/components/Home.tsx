@@ -1,13 +1,14 @@
 import React, { Component, useState, useEffect } from "react";
-import { HubConnectionBuilder } from "@aspnet/signalr";
+import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import { once } from "events";
 import { ChatHub } from "../Api";
 
-const c = new HubConnectionBuilder().withUrl("/chat").build();
+const c = new HubConnectionBuilder().withUrl("/room").build();
 
 const initial = {
   connection: c,
-  hub: new ChatHub(c)
+  hub: new ChatHub(c),
+  data: {}
 };
 
 
@@ -17,12 +18,15 @@ export const Home = () => {
   useEffect(() => {
     (async () => {
       state.hub.registerCallbacks({
-        send: (s) => {
-          console.log(s)
+        refresh: (r) => {
+          setState({...state, data: r})
+        },
+        send: (m) => {
         }
       });
-      await state.connection.start();
-    
+      if(state.connection.state == HubConnectionState.Disconnected){
+        await state.connection.start();
+      }
       await state.hub.send('Helo');
     })()
   })
@@ -30,6 +34,9 @@ export const Home = () => {
   return (
     <div>
       <h1>Hello, world!</h1>
+      <div>
+        {JSON.stringify(state.data)}
+      </div>
       <p>Welcome to your new single-page application, built with:</p>
       <ul>
         <li>

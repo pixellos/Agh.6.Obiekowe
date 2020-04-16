@@ -1,4 +1,5 @@
 ﻿using Agh.eSzachy.Models;
+using Agh;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace Agh.eSzachy.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
-
+        public DbSet<RoomEntity> Rooms { get; set; }
+        public DbSet<MessageEntity> Messages { get; set; }
     }
 }

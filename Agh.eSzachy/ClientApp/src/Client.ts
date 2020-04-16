@@ -1,7 +1,7 @@
 import {HubConnectionBuilder} from '@aspnet/signalr'
 
 let connection = new HubConnectionBuilder()
-    .withUrl("/chat")
+    .withUrl("/room")
     .build();
  
 connection.on("send", data => {

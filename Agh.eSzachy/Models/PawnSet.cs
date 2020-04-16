@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HelloSignalR
+namespace Agh
 {
     public class PawnSet
     {

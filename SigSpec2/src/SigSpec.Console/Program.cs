@@ -1,4 +1,4 @@
-﻿using HelloSignalR;
+﻿using Agh;
 using SigSpec.CodeGeneration.TypeScript;
 using SigSpec.Core;
 using System;
@@ -24,7 +24,6 @@ namespace SigSpec
             // TODO: Add PR to SignalR Core with new IHubDescriptionCollectionProvider service
             var document = generator.GenerateForHubs(new Dictionary<string, Type>
             {
-                { "chat", typeof(ChatHub) },
                 { "room", typeof(RoomHub) },
             });
 
@@ -32,7 +31,6 @@ namespace SigSpec
 
             Console.WriteLine("\nGenerated SigSpec document:");
             Console.WriteLine(json);
-            Console.ReadKey();
 
             var codeGeneratorSettings = new SigSpecToTypeScriptGeneratorSettings();
             var codeGenerator = new SigSpecToTypeScriptGenerator(codeGeneratorSettings);
@@ -51,7 +49,6 @@ namespace SigSpec
                 sw.Write(file);
             }
             Console.WriteLine(fi.FullName);
-            Console.ReadKey();
         }
     }
 }

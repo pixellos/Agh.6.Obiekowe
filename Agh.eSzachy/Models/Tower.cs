@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace HelloSignalR
+namespace Agh
 {
     public class Tower : IPawn
     {
-
         public IEnumerable<Point> Moves(Point position, Board board)
         {
             var pos = new Point(position.X, position.Y);
@@ -20,7 +19,5 @@ namespace HelloSignalR
             }
             while (board.CanMove(pos));
         }
-
-
     }
 }

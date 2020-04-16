@@ -1,4 +1,4 @@
-﻿namespace HelloSignalR
+﻿namespace Agh
 {
     public enum MessageType
     {

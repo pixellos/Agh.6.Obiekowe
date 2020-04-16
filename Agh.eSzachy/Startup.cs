@@ -11,7 +11,7 @@ using Agh.eSzachy.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using HelloSignalR;
+using Agh;
 
 namespace Agh.eSzachy
 {
@@ -27,6 +27,7 @@ namespace Agh.eSzachy
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IRoomService, RoomService>();
             services.AddCors(options =>
             {
                 options.AddPolicy(
@@ -43,10 +44,7 @@ namespace Agh.eSzachy
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
-                    Configuration.GetConnectionString("DefaultConnection"), x =>
-                    x.ServerVersion(new System.Version(5, 5, 62), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql)
-
-                    ));
+                    Configuration.GetConnectionString("DefaultConnection"), x => x.ServerVersion(new System.Version(5, 5, 62), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql)));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -56,14 +54,12 @@ namespace Agh.eSzachy
                 .AddDeveloperSigningCredential();
 
             services.AddAuthentication()
-        .AddGoogle(options =>
-        {
-            IConfigurationSection googleAuthNSection =
-                Configuration.GetSection("Authentication:Google");
-
-            options.ClientId = googleAuthNSection["ClientId"];
-            options.ClientSecret = googleAuthNSection["ClientSecret"];
-        })
+                .AddGoogle(options =>
+                {
+                    var googleAuthNSection = Configuration.GetSection("Authentication:Google");
+                    options.ClientId = googleAuthNSection["ClientId"];
+                    options.ClientSecret = googleAuthNSection["ClientSecret"];
+                })
                 .AddIdentityServerJwt();
 
             services.AddControllersWithViews();
@@ -74,11 +70,10 @@ namespace Agh.eSzachy
             {
                 configuration.RootPath = "ClientApp/build";
             });
-
+             
 
             services.AddSignalR(x =>
             {
-
                 x.EnableDetailedErrors = true;
             }).AddJsonProtocol();
             services.AddApplicationInsightsTelemetry();
@@ -115,7 +110,6 @@ namespace Agh.eSzachy
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
-                endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapHub<RoomHub>("/room");
             });
 
