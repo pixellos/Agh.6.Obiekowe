@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Agh
 {
+    [Authorize]
     public class RoomHub : Hub<IRoomClient>
     {
         public IRoomService RoomService { get; }
@@ -28,7 +29,7 @@ namespace Agh
 
         public async override Task OnConnectedAsync()
         {
-            var id = Context.User.Identity.Name ?? "Anonymous";
+            var id = Context.UserIdentifier ?? "Anonymous";
             var client = new Client(id);
             await RoomService.Status(client).MapAsync(async x =>
             {

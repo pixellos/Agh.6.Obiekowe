@@ -1,35 +1,45 @@
 import React, { Component, useState, useEffect } from "react";
-import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
-import { once } from "events";
+import { HubConnectionBuilder, HubConnectionState, HttpTransportType } from "@aspnet/signalr";
 import { ChatHub } from "../Api";
+import authService from "./api-authorization/AuthorizeService";
 
-const c = new HubConnectionBuilder().withUrl("/room").build();
 
 const initial = {
-  connection: c,
-  hub: new ChatHub(c),
+  hub: {} as ChatHub,
   data: {}
 };
 
 
 export const Home = () => {
+  authService.getAccessToken()
+
   const [state, setState] = useState(initial);
 
   useEffect(() => {
     (async () => {
-      state.hub.registerCallbacks({
+      if(state.hub instanceof ChatHub)
+      {
+        return;
+      }
+      const token = await authService.getAccessToken();
+      if(typeof token !== 'string'){
+        throw new Error();
+      }
+      const c = new HubConnectionBuilder().withUrl("/room", {accessTokenFactory: () => token }).build();
+      const hub = new ChatHub(c);
+      hub.registerCallbacks({
         refresh: (r) => {
-          setState({...state, data: r})
+          setState({...state, data: r, hub: hub})
         },
         send: (m) => {
         }
       });
-      if(state.connection.state == HubConnectionState.Disconnected){
-        await state.connection.start();
+      if(c.state === HubConnectionState.Disconnected){
+        await c.start();
       }
-      await state.hub.send('Helo');
+      await hub.send('Helo');
     })()
-  })
+  }, [state.hub])
 
   return (
     <div>

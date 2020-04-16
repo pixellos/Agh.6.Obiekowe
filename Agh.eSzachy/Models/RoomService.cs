@@ -45,6 +45,15 @@ namespace Agh
         public Result<Unit> SendMessage(Room r, Client c, string m) => throw new System.NotImplementedException();
         public Result<Room[]> Status(Client c)
         {
+            var basicRooms = new[]
+            {
+                new Room()
+                {
+                    Id = "Global",
+                    Name = "Global",
+                    Created = DateTime.Parse("10/10/2020")
+                }
+            };
             var activeRooms = this.DbContext.Rooms.Where(x => x.ActiveUsers.Any(u => u.Id == c.Id));
             var results = activeRooms.Select(x => new Room()
             {
@@ -52,7 +61,7 @@ namespace Agh
                 Name = x.Title,
                 Created = x.CreateDate,
 
-            }).ToArray();
+            }).ToArray().Concat(basicRooms).ToArray();
             return new Result<Room[]>(results);
         }
     }
