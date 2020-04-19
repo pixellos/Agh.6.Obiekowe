@@ -54,9 +54,9 @@
     <TypeScriptCompile Include="ClientApp\src\App.tsx" />
   </ItemGroup>
   
-  <!--<Target AfterTargets="AfterBuild" Name="Generate">
-    <Exec Command="$(SolutionDir)\..\SigSpec2\src\SigSpec.Console\bin\Debug\netcoreapp3.1\dotnet-sigspec.exe" />
-  </Target>-->
+  <Target AfterTargets="AfterBuild" Name="Generate">
+    <Exec Command="$(SolutionDir)..\SigSpec2\src\SigSpec.Console\bin\Debug\netcoreapp3.1\dotnet-sigspec.exe $(SolutionDir)ClientApp\src\Api.ts" />
+  </Target>
   
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />

@@ -13,10 +13,10 @@ namespace SigSpec
         static void Main(string[] args)
         {
             Console.WriteLine("SigSpec for SignalR Core");
-            Run();
+            Run(args[0]);
         }
 
-        static void Run()
+        static void Run(string path)
         {
             var settings = new SigSpecGeneratorSettings();
             var generator = new SigSpecGenerator(settings);
@@ -39,13 +39,13 @@ namespace SigSpec
 
             Console.WriteLine("\n\nGenerated SigSpec TypeScript code:");
             Console.WriteLine(file);
-            var fi = new FileInfo("./../../../../../../Agh.eSzachy/ClientApp/src/Api.ts");
+            var fi = new FileInfo(path);
             if (fi.Exists)
             {
                 fi.Delete();
             }
             //Create a file to write to.
-            using (StreamWriter sw = fi.CreateText())
+            using (var sw = fi.CreateText())
             {
                 sw.Write(file);
             }

@@ -43,6 +43,18 @@ export class GameHub {
     constructor(private connection: HubConnection) {
     }
 
+    move(roomName: string, from: string, to: string): Promise<void> {
+        return this.connection.invoke('Move', roomName, from, to);
+    }
+
+    ready(roomName: string): Promise<void> {
+        return this.connection.invoke('Ready', roomName);
+    }
+
+    surrender(roomName: string): Promise<void> {
+        return this.connection.invoke('Surrender', roomName);
+    }
+
     registerCallbacks(implementation: IGameHubCallbacks) {
     }
 
