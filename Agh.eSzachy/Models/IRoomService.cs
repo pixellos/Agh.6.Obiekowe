@@ -12,5 +12,7 @@ namespace Agh
         Result<Room> Left(Client c, string roomName);
         Result<Room> SendMessage(Room r, Client c, string m);
         Result<Room[]> Status(Client c);
+
+        Result<string[]> GetAllRoomNames();
     }
 }

@@ -82,7 +82,7 @@ namespace Agh
 
         public Result<Room> SendMessage(Room r, Client c, string m)
         {
-            var room = this.DbContext.Rooms.Include(x=>x.Messages).FirstOrDefault(x => x.Title == r.Id);
+            var room = this.DbContext.Rooms.Include(x => x.Messages).FirstOrDefault(x => x.Title == r.Id);
             var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
             if (room != null)
             {
@@ -108,7 +108,7 @@ namespace Agh
             var withUsers = this.DbContext.Rooms.Include(x => x.ActiveUsers);
             var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
 
-            var activeRooms = withUsers.Where(x => x.ActiveUsers.Any(u => u.UserId == user.Id)).Include(x=>x.Messages);
+            var activeRooms = withUsers.Where(x => x.ActiveUsers.Any(u => u.UserId == user.Id)).Include(x => x.Messages);
             var results = activeRooms.Select(x => Map(x)).ToArray();
             return new Result<Room[]>(results);
         }
@@ -125,5 +125,11 @@ namespace Agh
                 Text = x.Message
             }).ToList() ?? new List<Message>()
         };
+
+        public Result<string[]> GetAllRoomNames()
+        {
+            var results = this.DbContext.Rooms.Select(x => x.Title).ToArray();
+            return results;
+        }
     }
 }

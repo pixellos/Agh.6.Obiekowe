@@ -53,6 +53,11 @@ namespace Agh
             });
         }
 
+        public async Task<string[]> GetAllRooms()
+        {
+            return this.RoomService.GetAllRoomNames().Match(x => x, x => throw x);
+        }
+
         public Task Send(string roomId, string message)
         {
             var m = this.RoomService.SendMessage(new Room { Id = roomId }, this.User, message);
