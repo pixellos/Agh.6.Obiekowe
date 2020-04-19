@@ -3,14 +3,16 @@ using System;
 using Agh.eSzachy.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Agh.eSzachy.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200419113813_Games")]
+    partial class Games
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,21 +85,6 @@ namespace Agh.eSzachy.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("Agh.RoomUsers", b =>
-                {
-                    b.Property<string>("RoomId")
-                        .HasColumnType("varchar(95) CHARACTER SET utf8mb4");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("varchar(95) CHARACTER SET utf8mb4");
-
-                    b.HasKey("RoomId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RoomUsers");
-                });
-
             modelBuilder.Entity("Agh.eSzachy.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -140,6 +127,9 @@ namespace Agh.eSzachy.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("RoomEntityId")
+                        .HasColumnType("varchar(95) CHARACTER SET utf8mb4");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -158,6 +148,8 @@ namespace Agh.eSzachy.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasName("UserNameIndex");
+
+                    b.HasIndex("RoomEntityId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -401,19 +393,11 @@ namespace Agh.eSzachy.Migrations
                         .HasForeignKey("ActualGameId");
                 });
 
-            modelBuilder.Entity("Agh.RoomUsers", b =>
+            modelBuilder.Entity("Agh.eSzachy.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("Agh.RoomEntity", "Room")
+                    b.HasOne("Agh.RoomEntity", null)
                         .WithMany("ActiveUsers")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Agh.eSzachy.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoomEntityId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

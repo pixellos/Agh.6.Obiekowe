@@ -2,88 +2,128 @@
 using Agh.eSzachy.Models;
 using LanguageExt;
 using LanguageExt.Common;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading;
 
 namespace Agh
 {
-    public class RoomEntity
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public DateTime CreateDate { get; set; }
-        public virtual ICollection<ApplicationUser> ActiveUsers { get; set; }
-        public virtual ICollection<MessageEntity> Messages { get; set; }
-    }
-
-    public class MessageEntity
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
-        public string ClientId { get; set; }
-        public virtual ApplicationUser Client { get; set; }
-        public DateTime Date { get; set; }
-        [StringLength(128)]
-        public string Message { get; set; }
-    }
-
     public class RoomService : IRoomService
     {
-        public RoomService(ApplicationDbContext dbContext)
+        public RoomService(ApplicationDbContext dbContext, IUserStore<ApplicationUser> userStore)
         {
             this.DbContext = dbContext;
+            this.UserStore = userStore;
         }
 
         public ApplicationDbContext DbContext { get; }
+        public IUserStore<ApplicationUser> UserStore { get; }
 
-        public Result<Unit> Join(Client c, Room r) => throw new System.NotImplementedException();
-        public Result<Unit> Left(Client c, Room r) => throw new System.NotImplementedException();
-        public Result<Unit> SendMessage(Room r, Client c, string m)
+        public Result<Room> Create(Client c, Room r)
         {
-            var room = this.DbContext.Rooms.FirstOrDefault(x => x.Id == r.Id);
+            var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+            var existing = this.DbContext.Rooms.FirstOrDefault(x => x.Title == r.Name);
+            if (existing == null)
+            {
+                var re = new RoomEntity
+                {
+                    Title = r.Name,
+                    CreateDate = DateTime.Now,
+                    ActiveUsers = new List<RoomUsers>()
+                };
+                this.DbContext.Rooms.Add(re);
+                re.ActiveUsers.Add(new RoomUsers
+                {
+                    User = user
+                });
+                this.DbContext.SaveChanges();
+                return new Result<Room>(Map(re));
+            }
+            else
+            {
+                return new Result<Room>(new Exception($"{nameof(Room)} with given {nameof(Room.Name)} already exists."));
+            }
+        }
+
+        public Result<Room> Join(Client c, string roomName)
+        {
+            var room = this.DbContext.Rooms.FirstOrDefault(x => x.Title == roomName);
+            if (room != null)
+            {
+                var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+                room.ActiveUsers.Add(user.ToRoomUsers());
+                this.DbContext.SaveChanges();
+                return Map(room);
+            }
+            else
+            {
+                return new Result<Room>(new ArgumentException(this.GetType().FullName, nameof(c)));
+            }
+        }
+
+        public Result<Room> Left(Client c, string roomName)
+        {
+            var room = this.DbContext.Rooms.FirstOrDefault(x => x.Title == roomName);
+            if (room != null)
+            {
+                var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+                var isRemoved = room.ActiveUsers.Remove(user.ToRoomUsers());
+                if (isRemoved)
+                {
+                    this.DbContext.SaveChanges();
+                    return Map(room);
+                }
+            }
+            return new Result<Room>(new ArgumentException(this.GetType().FullName, nameof(c)));
+        }
+
+        public Result<Room> SendMessage(Room r, Client c, string m)
+        {
+            var room = this.DbContext.Rooms.Include(x=>x.Messages).FirstOrDefault(x => x.Title == r.Id);
+            var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
             if (room != null)
             {
                 room.Messages.Add(new MessageEntity
                 {
                     Date = DateTime.Now,
-                    ClientId = c.Id,
+                    ClientId = user.Id,
                     Message = m
                 });
                 this.DbContext.SaveChanges();
-                return new Result<Unit>();
+                var updateRoom = this.DbContext.Rooms.Single(x => x.Id == room.Id);
+                var result = Map(updateRoom);
+                return new Result<Room>(result);
             }
-            return new Result<Unit>(new ArgumentException(this.GetType().FullName, nameof(c)));
+            else
+            {
+                return new Result<Room>(new ArgumentException(this.GetType().FullName, nameof(c)));
+            }
         }
 
         public Result<Room[]> Status(Client c)
         {
-            var basicRooms = new[]
-            {
-                new Room()
-                {
-                    Id = "Global",
-                    Name = "Global",
-                    Created = DateTime.Parse("10/10/2020")
-                }
-            };
-            var activeRooms = this.DbContext.Rooms.Where(x => x.ActiveUsers.Any(u => u.Id == c.Id));
-            var results = activeRooms.Select(x => new Room()
-            {
-                Id = x.Id,
-                Name = x.Title,
-                Created = x.CreateDate,
-                Messages = x.Messages.Select(x => new Message()
-                {
-                    UserId = x.Client.Id,
-                    Created = x.Date,
-                    Text = x.Message
-                }).ToList()
-            }).ToArray().Concat(basicRooms).ToArray();
+            var withUsers = this.DbContext.Rooms.Include(x => x.ActiveUsers);
+            var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+
+            var activeRooms = withUsers.Where(x => x.ActiveUsers.Any(u => u.UserId == user.Id)).Include(x=>x.Messages);
+            var results = activeRooms.Select(x => Map(x)).ToArray();
             return new Result<Room[]>(results);
         }
+
+        private static Room Map(RoomEntity x) => new Room()
+        {
+            Id = x.Id,
+            Name = x.Title,
+            Created = x.CreateDate,
+            Messages = x.Messages?.Select(x => new Message()
+            {
+                UserId = x.Client.Id,
+                Created = x.Date,
+                Text = x.Message
+            }).ToList() ?? new List<Message>()
+        };
     }
 }

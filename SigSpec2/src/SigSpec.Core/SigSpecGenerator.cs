@@ -18,14 +18,14 @@ namespace SigSpec.Core
 
         public SigSpecGenerator(SigSpecGeneratorSettings settings)
         {
-            _settings = settings;
+            this._settings = settings;
         }
 
         public SigSpecDocument GenerateForHubs(IReadOnlyDictionary<string, Type> hubs)
         {
             var document = new SigSpecDocument();
-            var resolver = new SigSpecSchemaResolver(document, _settings);
-            var generator = new JsonSchemaGenerator(_settings);
+            var resolver = new SigSpecSchemaResolver(document, this._settings);
+            var generator = new JsonSchemaGenerator(this._settings);
 
             foreach (var h in hubs)
             {
@@ -35,24 +35,24 @@ namespace SigSpec.Core
                 hub.Name = type.Name.EndsWith("Hub") ? type.Name.Substring(0, type.Name.Length - 3) : type.Name;
                 hub.Description = type.GetXmlDocsSummary();
 
-                foreach (var method in GetOperationMethods(type))
+                foreach (var method in this.GetOperationMethods(type))
                 {
-                    var operation = GenerateOperation(type, method, generator, resolver, SigSpecOperationType.Sync);
+                    var operation = this.GenerateOperation(type, method, generator, resolver, SigSpecOperationType.Sync);
                     hub.Operations[method.Name] = operation;
                 }
 
-                foreach (var method in GetChannelMethods(type))
+                foreach (var method in this.GetChannelMethods(type))
                 {
-                    hub.Operations[method.Name] = GenerateOperation(type, method, generator, resolver, SigSpecOperationType.Observable);
+                    hub.Operations[method.Name] = this.GenerateOperation(type, method, generator, resolver, SigSpecOperationType.Observable);
                 }
 
                 var baseTypeGenericArguments = type.BaseType.GetGenericArguments();
                 if (baseTypeGenericArguments.Length == 1)
                 {
                     var callbackType = baseTypeGenericArguments[0];
-                    foreach (var callbackMethod in GetOperationMethods(callbackType))
+                    foreach (var callbackMethod in this.GetOperationMethods(callbackType))
                     {
-                        var callback = GenerateOperation(type, callbackMethod, generator, resolver, SigSpecOperationType.Sync);
+                        var callback = this.GenerateOperation(type, callbackMethod, generator, resolver, SigSpecOperationType.Sync);
                         hub.Callbacks[callbackMethod.Name] = callback;
                     }
                 }

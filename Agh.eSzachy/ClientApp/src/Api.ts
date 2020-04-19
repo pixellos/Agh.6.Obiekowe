@@ -4,12 +4,16 @@ export class RoomHub {
     constructor(private connection: HubConnection) {
     }
 
-    join(roomId: string): Promise<void> {
-        return this.connection.invoke('Join', roomId);
+    create(roomName: string): Promise<void> {
+        return this.connection.invoke('Create', roomName);
     }
 
-    leave(roomId: string): Promise<void> {
-        return this.connection.invoke('Leave', roomId);
+    join(roomName: string): Promise<void> {
+        return this.connection.invoke('Join', roomName);
+    }
+
+    leave(roomName: string): Promise<void> {
+        return this.connection.invoke('Leave', roomName);
     }
 
     send(roomId: string, message: string): Promise<void> {
@@ -17,19 +21,36 @@ export class RoomHub {
     }
 
     registerCallbacks(implementation: IRoomHubCallbacks) {
+        this.connection.on('RefreshSingle', (r) => implementation.refreshSingle(r));
         this.connection.on('Refresh', (r) => implementation.refresh(r));
         this.connection.on('Send', (message) => implementation.send(message));
     }
 
     unregisterCallbacks(implementation: IRoomHubCallbacks) {
+        this.connection.off('RefreshSingle', (r) => implementation.refreshSingle(r));
         this.connection.off('Refresh', (r) => implementation.refresh(r));
         this.connection.off('Send', (message) => implementation.send(message));
     }
 }
 
 export interface IRoomHubCallbacks {
+    refreshSingle(r: Room): void;
     refresh(r: Room[]): void;
     send(message: string): void;
+}
+
+export class GameHub {
+    constructor(private connection: HubConnection) {
+    }
+
+    registerCallbacks(implementation: IGameHubCallbacks) {
+    }
+
+    unregisterCallbacks(implementation: IGameHubCallbacks) {
+    }
+}
+
+export interface IGameHubCallbacks {
 }
 
 export interface Room {

@@ -8,8 +8,8 @@ namespace SigSpec.CodeGeneration.Models
     {
         public ParameterModel(string name, SigSpecParameter parameter, TypeResolverBase resolver)
         {
-            Name = name;
-            Type = resolver.Resolve(parameter.ActualTypeSchema, parameter.IsNullable(SchemaType.JsonSchema), Name);
+            this.Name = name;
+            this.Type = resolver.Resolve(parameter.ActualTypeSchema, parameter.IsNullable(SchemaType.JsonSchema), this.Name);
         }
 
         public string Name { get; }

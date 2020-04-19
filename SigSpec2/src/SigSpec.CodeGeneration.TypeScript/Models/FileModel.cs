@@ -6,7 +6,7 @@ namespace SigSpec.CodeGeneration.TypeScript.Models
     {
         public FileModel(IEnumerable<string> hubs)
         {
-            Hubs = hubs;
+            this.Hubs = hubs;
         }
 
         public IEnumerable<string> Hubs { get; }

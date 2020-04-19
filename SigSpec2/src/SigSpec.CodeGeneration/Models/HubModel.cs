@@ -13,15 +13,15 @@ namespace SigSpec.CodeGeneration.Models
 
         public HubModel(string path, SigSpecHub hub, TypeResolverBase resolver)
         {
-            _path = path;
-            _hub = hub;
-            _resolver = resolver;
+            this._path = path;
+            this._hub = hub;
+            this._resolver = resolver;
         }
 
-        public string Name => _hub.Name;
+        public string Name => this._hub.Name;
 
-        public IEnumerable<OperationModel> Operations => _hub.Operations.Select(o => new OperationModel(o.Key, o.Value, _resolver));
+        public IEnumerable<OperationModel> Operations => this._hub.Operations.Select(o => new OperationModel(o.Key, o.Value, this._resolver));
 
-        public IEnumerable<OperationModel> Callbacks => _hub.Callbacks.Select(o => new OperationModel(o.Key, o.Value, _resolver));
+        public IEnumerable<OperationModel> Callbacks => this._hub.Callbacks.Select(o => new OperationModel(o.Key, o.Value, this._resolver));
     }
 }

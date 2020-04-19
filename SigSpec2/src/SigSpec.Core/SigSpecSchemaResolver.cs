@@ -13,8 +13,8 @@ namespace SigSpec.Core
         public SigSpecSchemaResolver(SigSpecDocument document, SigSpecGeneratorSettings settings) 
             : base(document, settings)
         {
-            _document = document;
-            _settings = settings;
+            this._document = document;
+            this._settings = settings;
         }
 
         public override void AppendSchema(JsonSchema schema, string typeNameHint)
@@ -23,16 +23,16 @@ namespace SigSpec.Core
 
             if (schema == null)
                 throw new ArgumentNullException(nameof(schema));
-            if (schema == RootObject)
+            if (schema == this.RootObject)
                 throw new ArgumentException("The root schema cannot be appended.");
 
-            if (!_document.Definitions.Values.Contains(schema))
+            if (!this._document.Definitions.Values.Contains(schema))
             {
-                var typeName = _settings.TypeNameGenerator.Generate(schema, typeNameHint, _document.Definitions.Keys);
-                if (!string.IsNullOrEmpty(typeName) && !_document.Definitions.ContainsKey(typeName))
-                    _document.Definitions[typeName] = schema;
+                var typeName = this._settings.TypeNameGenerator.Generate(schema, typeNameHint, this._document.Definitions.Keys);
+                if (!string.IsNullOrEmpty(typeName) && !this._document.Definitions.ContainsKey(typeName))
+                    this._document.Definitions[typeName] = schema;
                 else
-                    _document.Definitions["ref_" + Guid.NewGuid().ToString().Replace("-", "_")] = schema;
+                    this._document.Definitions["ref_" + Guid.NewGuid().ToString().Replace("-", "_")] = schema;
             }
         }
     }

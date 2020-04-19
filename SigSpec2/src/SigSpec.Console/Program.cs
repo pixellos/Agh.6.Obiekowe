@@ -25,6 +25,7 @@ namespace SigSpec
             var document = generator.GenerateForHubs(new Dictionary<string, Type>
             {
                 { "room", typeof(RoomHub) },
+                { "game", typeof(GameHub) },
             });
 
             var json = document.ToJson();

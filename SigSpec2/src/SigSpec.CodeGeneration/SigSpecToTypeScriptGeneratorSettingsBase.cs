@@ -6,7 +6,7 @@ namespace SigSpec.CodeGeneration
     {
         public SigSpecToTypeScriptGeneratorSettingsBase(CodeGeneratorSettingsBase codeGeneratorSettings)
         {
-            CodeGeneratorSettings = codeGeneratorSettings;
+            this.CodeGeneratorSettings = codeGeneratorSettings;
         }
 
         protected CodeGeneratorSettingsBase CodeGeneratorSettings { get; }

@@ -1,52 +1,80 @@
 import React, { Component, useState, useEffect } from "react";
-import { HubConnectionBuilder, HubConnectionState, HttpTransportType } from "@aspnet/signalr";
-import { ChatHub } from "../Api";
+import {
+  HubConnectionBuilder,
+  HubConnectionState,
+  HttpTransportType,
+} from "@aspnet/signalr";
+import { RoomHub, Room } from "../Api";
 import authService from "./api-authorization/AuthorizeService";
 
-
 const initial = {
-  hub: {} as ChatHub,
-  data: {}
+  hub: {} as RoomHub,
+  data: [] as Room[],
+  message: "",
+  room: "",
 };
 
-
 export const Home = () => {
-  authService.getAccessToken()
+  authService.getAccessToken();
 
   const [state, setState] = useState(initial);
 
   useEffect(() => {
     (async () => {
-      if(state.hub instanceof ChatHub)
-      {
+      if (state.hub instanceof RoomHub) {
         return;
       }
       const token = await authService.getAccessToken();
-      if(typeof token !== 'string'){
+      if (typeof token !== "string") {
         throw new Error();
       }
-      const c = new HubConnectionBuilder().withUrl("/room", {accessTokenFactory: () => token }).build();
-      const hub = new ChatHub(c);
+      const c = new HubConnectionBuilder()
+        .withUrl("/room", { accessTokenFactory: () => token })
+        .build();
+      const hub = new RoomHub(c);
       hub.registerCallbacks({
         refresh: (r) => {
-          setState({...state, data: r, hub: hub})
+          setState({ ...state, data: r, hub });
         },
-        send: (m) => {
-        }
+        refreshSingle: (s) => {
+          const items = state.data.filter((x) => x.Id !== s.Id);
+          const toAdd = items.concat(s);
+          setState({
+            ...state,
+            data: toAdd,
+            hub,
+          });
+        },
+        send: (m) => {},
       });
-      if(c.state === HubConnectionState.Disconnected){
+      if (c.state === HubConnectionState.Disconnected) {
         await c.start();
+        debugger;
+        setState({ ...state, hub: hub });
       }
-      await hub.send('Helo');
-    })()
-  }, [state.hub])
+    })();
+  }, [state.hub]);
 
   return (
     <div>
       <h1>Hello, world!</h1>
-      <div>
-        {JSON.stringify(state.data)}
-      </div>
+      <div>{JSON.stringify(state.data)}</div>
+      Message
+      <input
+        onChange={(x) => setState({ ...state, message: x.target.value })}
+        type="text"
+      />
+      Room
+      <input
+        onChange={(x) => setState({ ...state, room: x.target.value })}
+        type="text"
+      />
+      <button onClick={(x) => state.hub.send(state.room, state.message)}>
+        send
+      </button>
+      <button onClick={(x) => state.hub.create(state.room)}>create</button>
+      <button onClick={(x) => state.hub.join(state.room)}>join</button>
+      <button onClick={(x) => state.hub.leave(state.room)}>left</button>
       <p>Welcome to your new single-page application, built with:</p>
       <ul>
         <li>

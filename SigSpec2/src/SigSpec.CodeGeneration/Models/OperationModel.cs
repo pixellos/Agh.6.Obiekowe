@@ -12,23 +12,23 @@ namespace SigSpec.CodeGeneration.Models
 
         public OperationModel(string name, SigSpecOperation operation, TypeResolverBase resolver)
         {
-            _operation = operation;
+            this._operation = operation;
 
-            Name = name;
-            ReturnType = operation.ReturnType != null ? new ReturnTypeModel(_operation.ReturnType, resolver) : null;
-            Parameters = operation.Parameters.Select(o => new ParameterModel(o.Key, o.Value, resolver));
+            this.Name = name;
+            this.ReturnType = operation.ReturnType != null ? new ReturnTypeModel(this._operation.ReturnType, resolver) : null;
+            this.Parameters = operation.Parameters.Select(o => new ParameterModel(o.Key, o.Value, resolver));
         }
 
         public string Name { get; }
 
-        public string MethodName => ConversionUtilities.ConvertToLowerCamelCase(Name, true);
+        public string MethodName => ConversionUtilities.ConvertToLowerCamelCase(this.Name, true);
 
         public IEnumerable<ParameterModel> Parameters { get; }
 
         public ReturnTypeModel ReturnType { get; }
 
-        public bool IsObservable => _operation.Type == SigSpecOperationType.Observable;
+        public bool IsObservable => this._operation.Type == SigSpecOperationType.Observable;
 
-        public bool HasReturnType => ReturnType != null;
+        public bool HasReturnType => this.ReturnType != null;
     }
 }

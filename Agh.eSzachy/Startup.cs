@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -20,44 +19,19 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using System.Threading;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Agh.eSzachy
 {
-    public class EmailBasedUserIdProvider : IUserIdProvider
-    {
-        public EmailBasedUserIdProvider(IServiceProvider serviceProvider)
-        {
-            this.ServiceProvider = serviceProvider;
-        }
-
-        public IServiceProvider ServiceProvider { get; }
-
-        public virtual string GetUserId(HubConnectionContext connection)
-        {
-            using (var scope = this.ServiceProvider.CreateScope())
-            {
-                var userStore = scope.ServiceProvider.GetService<IUserStore<ApplicationUser>>();
-                var id = connection.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = userStore.FindByIdAsync(id, CancellationToken.None);
-                user.ConfigureAwait(false);
-                var r = user.Result.Email;
-                return r;
-            }
-        }
-    }
-
-
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IRoomService, RoomService>();
@@ -76,7 +50,7 @@ namespace Agh.eSzachy
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
-                    Configuration.GetConnectionString("DefaultConnection"), x => x.ServerVersion(new System.Version(5, 5, 62), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql)));
+                    this.Configuration.GetConnectionString("DefaultConnection"), x => x.ServerVersion(new Version(5, 5, 62), ServerType.MySql)));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -92,7 +66,7 @@ namespace Agh.eSzachy
             services.AddAuthentication()
                 .AddGoogle(o =>
                 {
-                    var googleAuthNSection = Configuration.GetSection("Authentication:Google");
+                    var googleAuthNSection = this.Configuration.GetSection("Authentication:Google");
                     o.ClientId = googleAuthNSection["ClientId"];
                     o.ClientSecret = googleAuthNSection["ClientSecret"];
                     o.AuthorizationEndpoint += "?prompt=consent"; // Hack so we always get a refresh token, it only comes on the first authorization response
@@ -155,6 +129,7 @@ namespace Agh.eSzachy
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
                 endpoints.MapHub<RoomHub>("/room");
+                endpoints.MapHub<GameHub>("/game");
             });
 
             app.UseSpa(spa =>

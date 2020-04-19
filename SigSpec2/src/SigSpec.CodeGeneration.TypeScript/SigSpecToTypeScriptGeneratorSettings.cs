@@ -8,14 +8,14 @@ namespace SigSpec.CodeGeneration.TypeScript
         public SigSpecToTypeScriptGeneratorSettings()
             : base(new TypeScriptGeneratorSettings())
         {
-            TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Interface;
-            CodeGeneratorSettings.TemplateFactory = new DefaultTemplateFactory(TypeScriptGeneratorSettings, new[]
+            this.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Interface;
+            this.CodeGeneratorSettings.TemplateFactory = new DefaultTemplateFactory(this.TypeScriptGeneratorSettings, new[]
             {
                 typeof(TypeScriptGeneratorSettings).GetTypeInfo().Assembly,
                 typeof(SigSpecToTypeScriptGeneratorSettingsBase).GetTypeInfo().Assembly,
             });
         }
 
-        public TypeScriptGeneratorSettings TypeScriptGeneratorSettings => (TypeScriptGeneratorSettings)CodeGeneratorSettings;
+        public TypeScriptGeneratorSettings TypeScriptGeneratorSettings => (TypeScriptGeneratorSettings)this.CodeGeneratorSettings;
     }
 }

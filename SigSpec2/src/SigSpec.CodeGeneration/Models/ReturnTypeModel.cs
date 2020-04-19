@@ -10,10 +10,10 @@ namespace SigSpec.CodeGeneration.Models
 
         public ReturnTypeModel(JsonSchema parameter, TypeResolverBase resolver)
         {
-            _parameter = parameter;
-            _resolver = resolver;
+            this._parameter = parameter;
+            this._resolver = resolver;
 
-            Type = _resolver.Resolve(_parameter.ActualTypeSchema, _parameter.IsNullable(SchemaType.JsonSchema), null);
+            this.Type = this._resolver.Resolve(this._parameter.ActualTypeSchema, this._parameter.IsNullable(SchemaType.JsonSchema), null);
         }
 
         public string Type { get; }
