@@ -25,6 +25,16 @@ namespace Agh
 
         }
 
+        public async Task<ChessBoardHistory[]> HistoricalForPlayer(string email)
+        {
+            return default;
+        }
+
+        public async Task<ChessBoardHistory[]> HistoricalFor(string roomName)
+        {
+            return default;
+        }
+
         public async Task Surrender(string roomName)
         {
 

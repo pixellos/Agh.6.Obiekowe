@@ -61,6 +61,10 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

@@ -9,8 +9,14 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Agh
 {
+    public class AuthorizedHub<T> : Hub<T>
+        where T : class
+    {
+        protected Client User => new Client(this.Context.UserIdentifier);
+    }
+
     [Authorize]
-    public class RoomHub : Hub<IRoomClient>
+    public class RoomHub : AuthorizedHub<IRoomClient>
     {
         public IRoomService RoomService { get; }
 
@@ -18,8 +24,6 @@ namespace Agh
         {
             this.RoomService = roomService;
         }
-
-        Client User => new Client(this.Context.UserIdentifier);
 
         public async Task Create(string roomName)
         {
