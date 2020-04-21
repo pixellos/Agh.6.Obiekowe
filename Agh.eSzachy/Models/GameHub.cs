@@ -22,7 +22,6 @@ namespace Agh
 
         public async Task Ready(string roomName)
         {
-
         }
 
         public async Task<ChessBoardHistory[]> HistoricalForPlayer(string email)

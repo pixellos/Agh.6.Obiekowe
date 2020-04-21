@@ -30,6 +30,9 @@ namespace Agh.eSzachy.Data
             builder.Entity<RoomUsers>().HasKey(x => new { x.RoomId, x.UserId });
             builder.Entity<RoomUsers>().HasOne(x => x.Room).WithMany(x => x.ActiveUsers).HasForeignKey(x => x.RoomId);
             builder.Entity<RoomUsers>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
+
+            builder.Entity<GameEntity>().HasOne(x => x.Room).WithMany(x => x.ArchivedGames).HasForeignKey(x => x.RoomId);
+            builder.Entity<RoomEntity>().HasOne(x => x.ActualGame).WithOne();
         }
     }
 }
