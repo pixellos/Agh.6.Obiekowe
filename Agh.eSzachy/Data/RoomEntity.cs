@@ -1,11 +1,11 @@
-﻿using Agh.eSzachy.Models;
+﻿using Agh.eSzachy.Data;
+using Agh.eSzachy.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Agh
+namespace Agh.eSzachy.Data
 {
-
     public class RoomEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

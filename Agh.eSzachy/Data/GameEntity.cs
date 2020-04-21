@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Agh
+namespace Agh.eSzachy.Data
 {
     public class GameEntity
     {
@@ -15,7 +15,7 @@ namespace Agh
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
-    
-        
+
+
     }
 }

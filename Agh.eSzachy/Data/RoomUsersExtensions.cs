@@ -1,6 +1,6 @@
 ﻿using Agh.eSzachy.Models;
 
-namespace Agh
+namespace Agh.eSzachy.Data
 {
     public static class RoomUsersExtensions
     {
