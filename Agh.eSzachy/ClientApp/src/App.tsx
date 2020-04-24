@@ -8,6 +8,8 @@ import AuthorizeRoute from './components/api-authorization/AuthorizeRoute';
 import ApiAuthorizationRoutes from './components/api-authorization/ApiAuthorizationRoutes';
 import { ApplicationPaths } from './components/api-authorization/ApiAuthorizationConstants';
 
+import Game from './components/Game.js'
+
 import './custom.css'
 
 
@@ -22,6 +24,7 @@ export default class App extends Component {
         <Route path='/counter' component={Counter} />
         <AuthorizeRoute path='/fetch-data' component={FetchData} />
         <Route path={ApplicationPaths.ApiAuthorizationPrefix} component={ApiAuthorizationRoutes} />
+        <Game exact path='/game' component={Game} />
       </Layout>
     );
   }
