@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Agh.eSzachy.Data;
@@ -10,16 +9,12 @@ using Agh.eSzachy.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Agh;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Agh.eSzachy
 {
@@ -31,7 +26,7 @@ namespace Agh.eSzachy
         }
 
         public IConfiguration Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IRoomService, RoomService>();
@@ -49,8 +44,11 @@ namespace Agh.eSzachy
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(
-                    this.Configuration.GetConnectionString("DefaultConnection"), x => x.ServerVersion(new Version(5, 5, 62), ServerType.MySql)));
+            options.UseSqlServer(
+                    //options.UseMySql(
+                    this.Configuration.GetConnectionString("MsSql")
+                    //, x => x.ServerVersion(new Version(5, 5, 62), ServerType.MySql)
+                    ));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -79,7 +77,9 @@ namespace Agh.eSzachy
                     o.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
                     o.ClaimActions.MapJsonSubKey("urn:google:image", "image", "url");
                 })
-                .AddIdentityServerJwt();
+                .AddIdentityServerJwt()
+            ;
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>());
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -118,7 +118,6 @@ namespace Agh.eSzachy
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseIdentityServer();
             app.UseAuthorization();
@@ -141,6 +140,35 @@ namespace Agh.eSzachy
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+        }
+    }
+
+    public class ConfigureJwtBearerOptions : IPostConfigureOptions<JwtBearerOptions>
+    {
+        public void PostConfigure(string name, JwtBearerOptions options)
+        {
+            // save the original OnMessageReceived event
+            var originalOnMessageReceived = options.Events.OnMessageReceived;
+
+            options.Events.OnMessageReceived = async context =>
+            {
+                // call the original OnMessageReceived event
+                await originalOnMessageReceived(context);
+
+                if (string.IsNullOrEmpty(context.Token))
+                {
+                    // attempt to read the access token from the query string
+                    var accessToken = context.Request.Query["access_token"];
+
+                    // If the request is for our hub...
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/game") || path.StartsWithSegments("/room")))
+                    {
+                        // Read the token out of the query string
+                        context.Token = accessToken;
+                    }
+                }
+            };
         }
     }
 }

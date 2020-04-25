@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Agh
 {
@@ -24,7 +25,7 @@ namespace Agh
 
         public Result<Room> Create(Client c, Room r)
         {
-            var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+            var user = this.UserStore.FindByIdAsync(c.Id, CancellationToken.None).Result;
             var existing = this.DbContext.Rooms.FirstOrDefault(x => x.Title == r.Name);
             if (existing == null)
             {
@@ -53,7 +54,7 @@ namespace Agh
             var room = this.DbContext.Rooms.FirstOrDefault(x => x.Title == roomName);
             if (room != null)
             {
-                var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+                var user = this.UserStore.FindByIdAsync(c.Id, CancellationToken.None).Result;
                 room.ActiveUsers.Add(user.ToRoomUsers());
                 this.DbContext.SaveChanges();
                 return Map(room);
@@ -69,7 +70,7 @@ namespace Agh
             var room = this.DbContext.Rooms.FirstOrDefault(x => x.Title == roomName);
             if (room != null)
             {
-                var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+                var user = this.UserStore.FindByIdAsync(c.Id, CancellationToken.None).Result;
                 var isRemoved = room.ActiveUsers.Remove(user.ToRoomUsers());
                 if (isRemoved)
                 {
@@ -83,7 +84,7 @@ namespace Agh
         public Result<Room> SendMessage(Room r, Client c, string m)
         {
             var room = this.DbContext.Rooms.Include(x => x.Messages).FirstOrDefault(x => x.Title == r.Id);
-            var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
+            var user = this.UserStore.FindByIdAsync(c.Id, CancellationToken.None).Result;
             if (room != null)
             {
                 room.Messages.Add(new MessageEntity
@@ -103,11 +104,14 @@ namespace Agh
             }
         }
 
-        public Result<Room[]> Status(Client c)
+        public async Task<Result<Room[]>> Status(Client c)
         {
             var withUsers = this.DbContext.Rooms.Include(x => x.ActiveUsers);
-            var user = this.UserStore.FindByNameAsync(c.Id, CancellationToken.None).Result;
-
+            var user = await this.UserStore.FindByIdAsync(c.Id, CancellationToken.None);
+            if(user == null)
+            {
+                return new Result<Room[]>(new Room[] { });
+            }
             var activeRooms = withUsers.Where(x => x.ActiveUsers.Any(u => u.UserId == user.Id)).Include(x => x.Messages);
             var results = activeRooms.Select(x => Map(x)).ToArray();
             return new Result<Room[]>(results);

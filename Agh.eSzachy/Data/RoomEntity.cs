@@ -1,6 +1,4 @@
-﻿using Agh.eSzachy.Data;
-using Agh.eSzachy.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -1,4 +1,4 @@
-import { HubConnection, IStreamResult } from "@aspnet/signalr"
+import { HubConnection } from "@aspnet/signalr"
 
 export class RoomHub {
     constructor(private connection: HubConnection) {

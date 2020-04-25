@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace Agh
+namespace Agh.eSzachy.Models
 {
     public interface IPawn
     {
