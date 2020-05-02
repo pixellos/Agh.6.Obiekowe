@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Agh.eSzachy.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace Agh
+namespace Agh.eSzachy.Hubs
 {
     [Authorize]
     public class GameHub : Hub<IGameClient>
@@ -23,6 +23,7 @@ namespace Agh
 
         public async Task Ready(string roomName)
         {
+            await this.Groups.AddToGroupAsync(this.Context.ConnectionId, roomName).ConfigureAwait(false);
         }
 
         public async Task<ChessBoardHistory[]> HistoricalForPlayer(string email)

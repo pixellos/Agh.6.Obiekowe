@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RIDER_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../.." />
+    <content url="file://$MODULE_DIR$/../../../SigSpec2/src/SigSpec.CodeGeneration" />
+    <content url="file://$MODULE_DIR$/../../../SigSpec2/src/SigSpec.CodeGeneration.TypeScript" />
+    <content url="file://$MODULE_DIR$/../../../SigSpec2/src/SigSpec.Console" />
+    <content url="file://$MODULE_DIR$/../../../SigSpec2/src/SigSpec.Core" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

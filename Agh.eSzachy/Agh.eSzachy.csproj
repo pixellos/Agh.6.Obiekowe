@@ -9,6 +9,7 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <UserSecretsId>840a9205-c654-4efc-b987-5e66fc67266e</UserSecretsId>
     <ApplicationInsightsResourceId>/subscriptions/ec8ec608-2a0f-4b44-8731-f3ab0e60921c/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Agh.eSzachy</ApplicationInsightsResourceId>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

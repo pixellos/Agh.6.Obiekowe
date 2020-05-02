@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Agh
+namespace Agh.eSzachy.Models
 {
     public class Message
     {

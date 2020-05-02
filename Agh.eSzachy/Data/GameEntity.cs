@@ -10,12 +10,4 @@ namespace Agh.eSzachy.Data
         public string RoomId { get; set; }
         public RoomEntity Room { get; set; }
     }
-
-    public class GameSnapshotEntity
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
-
-
-    }
 }

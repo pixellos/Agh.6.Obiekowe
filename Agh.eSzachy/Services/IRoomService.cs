@@ -1,8 +1,8 @@
-﻿using Agh.eSzachy.Models;
+﻿using System.Threading.Tasks;
+using Agh.eSzachy.Models;
 using LanguageExt.Common;
-using System.Threading.Tasks;
 
-namespace Agh
+namespace Agh.eSzachy.Services
 {
     public interface IRoomService
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Agh
+namespace Agh.eSzachy.Models
 {
     public class PawnSet
     {

@@ -1,16 +1,15 @@
-﻿using Agh.eSzachy.Data;
-using Agh.eSzachy.Models;
-using LanguageExt;
-using LanguageExt.Common;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Agh.eSzachy.Data;
+using Agh.eSzachy.Models;
+using LanguageExt.Common;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace Agh
+namespace Agh.eSzachy.Services
 {
     public class RoomService : IRoomService
     {

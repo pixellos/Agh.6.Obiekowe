@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace Agh
+namespace Agh.eSzachy.Models
 {
     public class Board
     {

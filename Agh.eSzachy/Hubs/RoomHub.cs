@@ -1,18 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Agh.eSzachy.Models;
+using Agh.eSzachy.Services;
 using LanguageExt;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-namespace Agh
-{
-    public class AuthorizedHub<T> : Hub<T>
-        where T : class
-    {
-        protected Client User => new Client(this.Context.UserIdentifier);
-    }
 
+namespace Agh.eSzachy.Hubs
+{
     [Authorize]
     public class RoomHub : AuthorizedHub<IRoomClient>
     {

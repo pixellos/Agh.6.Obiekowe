@@ -1,4 +1,4 @@
-﻿namespace Agh
+﻿namespace Agh.eSzachy.Models
 {
     public class BoardState
     {
