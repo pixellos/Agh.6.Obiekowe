@@ -7,7 +7,7 @@ namespace Agh.eSzachy.Models.Chess
 {
     public abstract class BasePawn
     {
-        protected readonly Player player;
+        public readonly Player player;
         private readonly bool isColiding;
 
         public BasePawn(Player player, bool isColiding = true)

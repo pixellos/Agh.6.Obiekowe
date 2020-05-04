@@ -55,11 +55,7 @@ namespace Agh.eSzachy
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentityServer(x =>
-            {
-                x.Discovery.ShowApiScopes = true;
-                x.Discovery.ShowClaims = true;
-            })
+            services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
                 .AddDeveloperSigningCredential();
 
@@ -69,7 +65,6 @@ namespace Agh.eSzachy
                     var googleAuthNSection = this.Configuration.GetSection("Authentication:Google");
                     o.ClientId = googleAuthNSection["ClientId"];
                     o.ClientSecret = googleAuthNSection["ClientSecret"];
-                    o.AuthorizationEndpoint += "?prompt=consent"; // Hack so we always get a refresh token, it only comes on the first authorization response
                     o.Scope.Add("openid");
                     o.Scope.Add("profile");
                     o.Scope.Add("email");
@@ -77,7 +72,6 @@ namespace Agh.eSzachy
                     o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email", ClaimValueTypes.Email);
                     o.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
                     o.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
-                    o.ClaimActions.MapJsonSubKey("urn:google:image", "image", "url");
                 })
                 .AddIdentityServerJwt()
             ;

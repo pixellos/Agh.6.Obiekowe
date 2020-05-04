@@ -30,7 +30,6 @@ namespace SigSpec
             });
 
             var json = document.ToJson();
-
             Console.WriteLine("\nGenerated SigSpec document:");
             Console.WriteLine(json);
 

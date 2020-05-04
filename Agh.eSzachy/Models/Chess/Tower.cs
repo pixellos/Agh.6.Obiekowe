@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Agh.eSzachy.Models.Chess
 {
-    public class Tower : BasePawn
+    public class ook : BasePawn
     {
-        public Tower(Player player, bool isColiding = true) : base(player, isColiding)
+        public ook(Player player, bool isColiding = true) : base(player, isColiding)
         {
         }
 

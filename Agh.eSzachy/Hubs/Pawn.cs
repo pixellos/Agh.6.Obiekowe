@@ -2,9 +2,9 @@ namespace Agh.eSzachy.Hubs
 {
     public class Pawn
     {
-        public bool IsWhile { get; set; }
-        public bool Type { get; set; }
-        public bool Position { get; set; }
-
+        public bool IsPlayerOne { get; set; }
+        public string Type { get; set; }
+        public int Row { get; set; }
+        public int Col { get; set; }
     }
 }

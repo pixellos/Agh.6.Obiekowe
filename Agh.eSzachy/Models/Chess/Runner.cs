@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Agh.eSzachy.Models.Chess
 {
-    public class Runner :BasePawn
+    public class Bishop :BasePawn
     {
-        public Runner(Player player, bool isColiding = true) : base(player, isColiding)
+        public Bishop(Player player, bool isColiding = true) : base(player, isColiding)
         {
         }
 
