@@ -65,7 +65,6 @@ namespace Agh.eSzachy.Hubs
             };
         }
 
-
         private async Task Refresh(Models.Room room)
         {
             var currentGame = await this.GameService.Current(room);
