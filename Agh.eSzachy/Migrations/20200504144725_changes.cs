@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Agh.eSzachy.MigrationsMsSql
+namespace Agh.eSzachy.Migrations
 {
-    public partial class MsSql : Migration
+    public partial class changes : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,6 +27,7 @@ namespace Agh.eSzachy.MigrationsMsSql
                 {
                     Id = table.Column<string>(nullable: false),
                     UserName = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
@@ -38,8 +39,7 @@ namespace Agh.eSzachy.MigrationsMsSql
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true)
+                    AccessFailedCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,6 +78,19 @@ namespace Agh.eSzachy.MigrationsMsSql
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rooms",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Title = table.Column<string>(nullable: false),
+                    CreateDate = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,9 +204,9 @@ namespace Agh.eSzachy.MigrationsMsSql
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    ClientId = table.Column<string>(nullable: true),
+                    ClientId = table.Column<string>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
-                    Message = table.Column<string>(maxLength: 128, nullable: true),
+                    Message = table.Column<string>(maxLength: 128, nullable: false),
                     RoomEntityId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -203,6 +216,12 @@ namespace Agh.eSzachy.MigrationsMsSql
                         name: "FK_Messages_AspNetUsers_ClientId",
                         column: x => x.ClientId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Messages_Rooms_RoomEntityId",
+                        column: x => x.RoomEntityId,
+                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -218,43 +237,17 @@ namespace Agh.eSzachy.MigrationsMsSql
                 {
                     table.PrimaryKey("PK_RoomUsers", x => new { x.RoomId, x.UserId });
                     table.ForeignKey(
+                        name: "FK_RoomUsers_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_RoomUsers_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Rooms",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Title = table.Column<string>(nullable: true),
-                    CreateDate = table.Column<DateTime>(nullable: false),
-                    ActualGameId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rooms", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Games",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    RoomId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Games", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Games_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -308,11 +301,6 @@ namespace Agh.eSzachy.MigrationsMsSql
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_RoomId",
-                table: "Games",
-                column: "RoomId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Messages_ClientId",
                 table: "Messages",
                 column: "ClientId");
@@ -333,48 +321,13 @@ namespace Agh.eSzachy.MigrationsMsSql
                 columns: new[] { "SubjectId", "ClientId", "Type" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_ActualGameId",
-                table: "Rooms",
-                column: "ActualGameId",
-                unique: true,
-                filter: "[ActualGameId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RoomUsers_UserId",
                 table: "RoomUsers",
                 column: "UserId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Messages_Rooms_RoomEntityId",
-                table: "Messages",
-                column: "RoomEntityId",
-                principalTable: "Rooms",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_RoomUsers_Rooms_RoomId",
-                table: "RoomUsers",
-                column: "RoomId",
-                principalTable: "Rooms",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Rooms_Games_ActualGameId",
-                table: "Rooms",
-                column: "ActualGameId",
-                principalTable: "Games",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Games_Rooms_RoomId",
-                table: "Games");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -406,13 +359,10 @@ namespace Agh.eSzachy.MigrationsMsSql
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "Games");
+                name: "AspNetUsers");
         }
     }
 }

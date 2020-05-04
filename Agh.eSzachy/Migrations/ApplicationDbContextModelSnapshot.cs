@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Agh.eSzachy.MigrationsMsSql
+namespace Agh.eSzachy.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -15,25 +15,9 @@ namespace Agh.eSzachy.MigrationsMsSql
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Agh.eSzachy.Data.GameEntity", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoomId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomId");
-
-                    b.ToTable("Games");
-                });
 
             modelBuilder.Entity("Agh.eSzachy.Data.MessageEntity", b =>
                 {
@@ -42,12 +26,14 @@ namespace Agh.eSzachy.MigrationsMsSql
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClientId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Message")
+                        .IsRequired()
                         .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
 
@@ -69,20 +55,14 @@ namespace Agh.eSzachy.MigrationsMsSql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ActualGameId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActualGameId")
-                        .IsUnique()
-                        .HasFilter("[ActualGameId] IS NOT NULL");
 
                     b.ToTable("Rooms");
                 });
@@ -384,29 +364,17 @@ namespace Agh.eSzachy.MigrationsMsSql
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Agh.eSzachy.Data.GameEntity", b =>
-                {
-                    b.HasOne("Agh.eSzachy.Data.RoomEntity", "Room")
-                        .WithMany("ArchivedGames")
-                        .HasForeignKey("RoomId");
-                });
-
             modelBuilder.Entity("Agh.eSzachy.Data.MessageEntity", b =>
                 {
                     b.HasOne("Agh.eSzachy.Models.ApplicationUser", "Client")
                         .WithMany()
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Agh.eSzachy.Data.RoomEntity", null)
                         .WithMany("Messages")
                         .HasForeignKey("RoomEntityId");
-                });
-
-            modelBuilder.Entity("Agh.eSzachy.Data.RoomEntity", b =>
-                {
-                    b.HasOne("Agh.eSzachy.Data.GameEntity", "ActualGame")
-                        .WithOne()
-                        .HasForeignKey("Agh.eSzachy.Data.RoomEntity", "ActualGameId");
                 });
 
             modelBuilder.Entity("Agh.eSzachy.Data.RoomUsers", b =>
