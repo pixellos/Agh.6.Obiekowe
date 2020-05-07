@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace Agh.eSzachy.Hubs
 {
     [Authorize]
-    public class GameHub : Hub<IGameClient>
+    public class GameHub : AuthorizedHub<IGameClient>
     {
         public GameHub(IGameService gameService, IRoomService roomService)
         {
@@ -65,7 +65,7 @@ namespace Agh.eSzachy.Hubs
             };
         }
 
-        private async Task Refresh(Models.Room room)
+        public async Task Refresh(Models.Room room)
         {
             var currentGame = await this.GameService.Current(room);
             await this.Clients.Group(room.Name).Refresh(room.Name, Map(currentGame));
@@ -101,6 +101,10 @@ namespace Agh.eSzachy.Hubs
         public async Task Surrender(string roomName)
         {
 
+        }
+
+        public async override Task OnConnectedAsync()
+        {
         }
     }
 }

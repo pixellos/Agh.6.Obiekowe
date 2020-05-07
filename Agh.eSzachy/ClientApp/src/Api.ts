@@ -63,6 +63,10 @@ export class GameHub {
         return this.connection.invoke('MapHistory', model);
     }
 
+    refresh(room: Room): Promise<void> {
+        return this.connection.invoke('Refresh', room);
+    }
+
     ready(roomName: string): Promise<void> {
         return this.connection.invoke('Ready', roomName);
     }

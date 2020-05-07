@@ -35,7 +35,7 @@ export class Game extends React.Component {
       }
 
       const c = new HubConnectionBuilder()
-        .withUrl("/room", { accessTokenFactory: () => token })
+        .withUrl("/game", { accessTokenFactory: () => token })
         .build();
 
       const gameHub = new GameHub(c);
@@ -49,7 +49,8 @@ export class Game extends React.Component {
 
       if (c.state === HubConnectionState.Disconnected) {
         await c.start();
-
+        // Here pass the room name
+        gameHub.refresh(null);
         this.setState({ gameHub });
       }
     })();
