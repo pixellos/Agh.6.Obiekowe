@@ -23,7 +23,8 @@ namespace Agh.eSzachy
             {
                 var userStore = scope.ServiceProvider.GetService<IUserStore<ApplicationUser>>();
                 var id = connection.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = userStore.FindByIdAsync(id, CancellationToken.None);
+                var email = connection.User?.FindFirstValue(ClaimTypes.Email);
+                var user = id != null ? userStore.FindByIdAsync(id, CancellationToken.None) : userStore.FindByNameAsync(email, CancellationToken.None);
                 user.ConfigureAwait(false);
                 var r = user.Result.Id;
                 return r;

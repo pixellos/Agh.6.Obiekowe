@@ -2,32 +2,6 @@ using System.Collections.Generic;
 
 namespace Agh.eSzachy.Models.Chess
 {
-    public class Queen : BasePawn
-    {
-        public Queen(Player player, bool isColiding = true) : base(player, isColiding)
-        {
-        }
-
-        public override IEnumerable<Position> GetPositions(Position startingPosition) => throw new System.NotImplementedException();
-    }
-
-    public class King : BasePawn
-    {
-        public King(Player player, bool isColiding = true) : base(player, isColiding)
-        {
-        }
-
-        public override IEnumerable<Position> GetPositions(Position startingPosition) => throw new System.NotImplementedException();
-    }
-
-    public class Rook : BasePawn
-    {
-        public Rook(Player player, bool isColiding = true) : base(player, isColiding)
-        {
-        }
-
-        public override IEnumerable<Position> GetPositions(Position startingPosition) => throw new System.NotImplementedException();
-    }
 
     public class Knight : BasePawn
     {

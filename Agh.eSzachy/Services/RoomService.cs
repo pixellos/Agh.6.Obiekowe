@@ -39,7 +39,16 @@ namespace Agh.eSzachy.Services
                 {
                     User = user
                 });
-                this.DbContext.SaveChanges();
+                try
+                {
+                    this.DbContext.SaveChanges();
+
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
                 return new Result<Room>(Map(re));
             }
             else

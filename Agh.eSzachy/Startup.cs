@@ -18,6 +18,8 @@ using Agh.eSzachy.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Agh.eSzachy
 {
@@ -53,7 +55,7 @@ namespace Agh.eSzachy
                     //, x => x.ServerVersion(new Version(5, 5, 62), ServerType.MySql)
                     ));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
@@ -86,10 +88,26 @@ namespace Agh.eSzachy
                 configuration.RootPath = "ClientApp/build";
             });
 
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+                    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+                });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = $"/Identity/Account/Login";
+                options.LogoutPath = $"/Identity/Account/Logout";
+                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
+
+
             services.AddSignalR(x =>
             {
                 x.EnableDetailedErrors = true;
             }).AddJsonProtocol();
+
             services.AddTransient<IUserIdProvider, EmailBasedUserIdProvider>();
 
             services.AddApplicationInsightsTelemetry();

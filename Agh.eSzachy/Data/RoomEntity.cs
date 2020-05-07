@@ -13,8 +13,6 @@ namespace Agh.eSzachy.Data
         public virtual ICollection<RoomUsers> ActiveUsers { get; set; }
         public ICollection<MessageEntity> Messages { get; set; }
 
-        public virtual string ActualGameId { get; set; }
-
         public virtual ICollection<GameEntity> Games { get; set; }
     }
 }
