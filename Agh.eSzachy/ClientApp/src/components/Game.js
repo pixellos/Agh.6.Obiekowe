@@ -24,7 +24,8 @@ export class Game extends React.Component {
   }
 
   componentDidMount() {
-    (async () => {
+      (async () => {
+          debugger;
       if (this.state.hub instanceof GameHub) {
         return;
       }
@@ -49,8 +50,7 @@ export class Game extends React.Component {
 
       if (c.state === HubConnectionState.Disconnected) {
         await c.start();
-        // Here pass the room name
-        gameHub.refresh(null);
+          gameHub.refresh(this.state.roomName);
         this.setState({ gameHub });
       }
     })();
