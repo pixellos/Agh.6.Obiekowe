@@ -23,6 +23,7 @@
     "rimraf": "^2.7.1"
   },
   "devDependencies": {
+    "@types/react-router-dom": "^5.1.5",
     "ajv": "^6.12.2",
     "cross-env": "^5.2.1",
     "typescript": "^3.8.3"

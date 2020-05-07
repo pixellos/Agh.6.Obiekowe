@@ -3,16 +3,14 @@ import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import { RoomHub, Room } from "../Api";
 import authService from "./api-authorization/AuthorizeService";
 
-export const Home = () => {
+import { withRouter } from "react-router-dom";
+
+export const Home = withRouter(({ history }) => {
   authService.getAccessToken();
 
-  const [dataState, setDataState] = useState([] as Room[]);
-
   const [hub, setHub] = useState<RoomHub>({} as RoomHub);
-  const [message, setMessage] = useState<string>("");
-  const [room, setRoom] = useState<string>("");
 
-  const [roomList, setRoomList] = useState<string[]>([] as string[]);
+  const [roomList, setRoomList] = useState<Room[]>([] as Room[]);
 
   useEffect(() => {
     (async () => {
@@ -32,10 +30,11 @@ export const Home = () => {
       const roomHub = new RoomHub(c);
       roomHub.registerCallbacks({
         refresh: (r) => {
-          setDataState(r);
+          setRoomList(r);
         },
-        refreshSingle: (s) => {
-          setDataState([s]);
+        refreshSingle: (room) => {
+          history.push(`/room/${room.Name}`);
+          console.log("registerCallbacks.refreshSingle", room);
         },
         send: (m) => {},
       });
@@ -45,34 +44,25 @@ export const Home = () => {
           await c.start();
 
           setHub(roomHub);
-          setMessage("");
-          setRoom("");
-          break;
-
-        case HubConnectionState.Connected:
-          const roomList = await roomHub.getAllRooms();
-
-          setRoomList(roomList);
           break;
       }
     })();
-  }, [hub, setDataState]);
+  }, [hub, history]);
 
   return (
     <>
-      {/* <div>{JSON.stringify(dataState)}</div> */}
-      <div>{JSON.stringify(roomList)}</div>
-      Message
-      <input onChange={(x) => setMessage(x.target.value)} type="text" />
-      Room
-      <input onChange={(x) => setRoom(x.target.value)} type="text" />
-      <div />
-      <div />
-      <div />
-      <button onClick={(x) => hub.send(room, message)}>send</button>
-      <button onClick={(x) => hub.create(room)}>create</button>
-      <button onClick={(x) => hub.join(room)}>join</button>
-      <button onClick={(x) => hub.leave(room)}>left</button>
+      <h2>Rooms</h2>
+      <>
+        {roomList.map((room) => (
+          <div key={room.Id}>
+            <span>{room.Name}</span>
+            <span>
+              <button onClick={(x) => hub.join(room.Name)}>join</button>
+              <button onClick={(x) => hub.leave(room.Name)}>leave</button>
+            </span>
+          </div>
+        ))}
+      </>
     </>
   );
-};
+});

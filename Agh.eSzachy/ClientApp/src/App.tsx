@@ -21,7 +21,7 @@ export default class App extends Component {
       <Layout>
         <AuthorizeRoute exact path="/" component={Home} />
         <AuthorizeRoute path="/fetch-data" component={FetchData} />
-        <AuthorizeRoute path="/game" component={Game} />
+        <AuthorizeRoute path="/room/:name" component={Game} />
 
         <Route
           path={ApplicationPaths.ApiAuthorizationPrefix}

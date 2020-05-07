@@ -3,9 +3,12 @@ import React from "react";
 import Board from "./Board.js";
 import FallenSoldierBlock from "./FallenSoldierBlock.js";
 import initialiseChessBoard from "../helpers/board-initialiser.js";
+import { GameHub } from "../Api.ts";
+import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
+import authService from "./api-authorization/AuthorizeService";
 
 export class Game extends React.Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       squares: initialiseChessBoard(),
@@ -15,7 +18,41 @@ export class Game extends React.Component {
       sourceSelection: -1,
       status: "",
       turn: "white",
+      gameHub: null,
+      roomName: props.match?.params?.name || null,
     };
+  }
+
+  componentDidMount() {
+    (async () => {
+      if (this.state.hub instanceof GameHub) {
+        return;
+      }
+
+      const token = await authService.getAccessToken();
+      if (typeof token !== "string") {
+        throw new Error();
+      }
+
+      const c = new HubConnectionBuilder()
+        .withUrl("/room", { accessTokenFactory: () => token })
+        .build();
+
+      const gameHub = new GameHub(c);
+      gameHub.registerCallbacks({
+        refresh: (r) => {
+          // setRoomList(r);
+          console.log("registerCallbacks.refresh", r);
+        },
+        send: (m) => {},
+      });
+
+      if (c.state === HubConnectionState.Disconnected) {
+        await c.start();
+
+        this.setState({ gameHub });
+      }
+    })();
   }
 
   handleClick(i) {
@@ -73,6 +110,18 @@ export class Game extends React.Component {
           }
           squares[i] = squares[this.state.sourceSelection];
           squares[this.state.sourceSelection] = null;
+
+          const columnFrom = this.state.sourceSelection % 8;
+          const rowFrom = Math.floor(this.state.sourceSelection / 8);
+
+          const columnTo = i % 8;
+          const rowTo = Math.floor(i / 8);
+
+          this.state.gameHub.move(
+            this.state.roomName,
+            { Col: columnFrom, Row: rowFrom },
+            { Col: columnTo, Row: rowTo }
+          );
 
           const player = this.state.player === 1 ? 2 : 1;
           const turn = this.state.turn === "white" ? "black" : "white";
