@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Text.Json;
 
 namespace Agh.eSzachy
 {
@@ -107,7 +108,7 @@ namespace Agh.eSzachy
             services.AddSignalR(x =>
             {
                 x.EnableDetailedErrors = true;
-            }).AddJsonProtocol();
+            }).AddJsonProtocol(x=>x.PayloadSerializerOptions.PropertyNamingPolicy = null);
 
             services.AddTransient<IUserIdProvider, EmailBasedUserIdProvider>();
             services.AddSingleton<IEmailSender, EmailSender>();
