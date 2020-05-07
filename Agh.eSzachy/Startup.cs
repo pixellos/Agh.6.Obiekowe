@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Agh.eSzachy
 {
@@ -109,7 +110,7 @@ namespace Agh.eSzachy
             }).AddJsonProtocol();
 
             services.AddTransient<IUserIdProvider, EmailBasedUserIdProvider>();
-
+            services.AddSingleton<IEmailSender, EmailSender>();
             services.AddApplicationInsightsTelemetry();
         }
 
@@ -155,6 +156,14 @@ namespace Agh.eSzachy
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+        }
+    }
+
+    public class EmailSender : IEmailSender
+    {
+        public Task SendEmailAsync(string email, string subject, string message)
+        {
+            return Task.CompletedTask;
         }
     }
 }
