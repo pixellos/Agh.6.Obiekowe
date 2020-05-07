@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SigSpec.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\rogoz\\source\\repos\\Agh.6.Obiekowe\\Agh.eSzachy\\ClientApp\\src\\Api.ts"
+    }
+  }
+}

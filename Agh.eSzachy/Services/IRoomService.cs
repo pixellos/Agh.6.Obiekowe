@@ -1,9 +1,8 @@
-﻿using Agh.eSzachy.Data;
+﻿using System.Threading.Tasks;
 using Agh.eSzachy.Models;
 using LanguageExt.Common;
-using Microsoft.AspNetCore.Identity;
 
-namespace Agh
+namespace Agh.eSzachy.Services
 {
     public interface IRoomService
     {
@@ -11,7 +10,7 @@ namespace Agh
         Result<Room> Join(Client c, string roomName);
         Result<Room> Left(Client c, string roomName);
         Result<Room> SendMessage(Room r, Client c, string m);
-        Result<Room[]> Status(Client c);
+        Task<Result<Room[]>> Status(Client c);
 
         Result<string[]> GetAllRoomNames();
     }

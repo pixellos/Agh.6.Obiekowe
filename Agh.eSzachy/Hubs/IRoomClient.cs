@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Agh.eSzachy.Models;
 
-namespace Agh
+namespace Agh.eSzachy.Hubs
 {
     public interface IRoomClient
     {

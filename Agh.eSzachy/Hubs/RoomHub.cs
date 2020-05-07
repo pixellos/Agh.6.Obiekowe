@@ -1,20 +1,12 @@
-using System;
 using System.Linq;
-using System.Threading.Channels;
 using System.Threading.Tasks;
+using Agh.eSzachy.Models;
+using Agh.eSzachy.Services;
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 
-namespace Agh
+namespace Agh.eSzachy.Hubs
 {
-    public class AuthorizedHub<T> : Hub<T>
-        where T : class
-    {
-        protected Client User => new Client(this.Context.UserIdentifier);
-    }
-
     [Authorize]
     public class RoomHub : AuthorizedHub<IRoomClient>
     {
@@ -78,7 +70,8 @@ namespace Agh
         {
             var id = this.Context.UserIdentifier ?? "Anonymous";
             var client = new Client(id);
-            await this.RoomService.Status(client).MapAsync(async x =>
+            var status = await this.RoomService.Status(client);
+            await status.MapAsync(async x =>
             {
                 await Task.WhenAll(x.Select((r) =>
                 {

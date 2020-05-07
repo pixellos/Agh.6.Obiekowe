@@ -1,8 +1,7 @@
 ﻿using Agh.eSzachy.Models;
 
-namespace Agh
+namespace Agh.eSzachy.Data
 {
-
     public class RoomUsers
     {
         public RoomEntity Room { get; set; }

@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Agh.eSzachy.Data;
@@ -10,16 +9,14 @@ using Agh.eSzachy.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Agh;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
+using Agh.eSzachy.Hubs;
+using Agh.eSzachy.Services;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Agh.eSzachy
 {
@@ -31,7 +28,7 @@ namespace Agh.eSzachy
         }
 
         public IConfiguration Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IRoomService, RoomService>();
@@ -49,17 +46,16 @@ namespace Agh.eSzachy
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(
-                    this.Configuration.GetConnectionString("DefaultConnection"), x => x.ServerVersion(new Version(5, 5, 62), ServerType.MySql)));
+            options.UseSqlServer(
+                    //options.UseMySql(
+                    this.Configuration.GetConnectionString("MsSql")
+                    //, x => x.ServerVersion(new Version(5, 5, 62), ServerType.MySql)
+                    ));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentityServer(x =>
-            {
-                x.Discovery.ShowApiScopes = true;
-                x.Discovery.ShowClaims = true;
-            })
+            services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
                 .AddDeveloperSigningCredential();
 
@@ -69,7 +65,6 @@ namespace Agh.eSzachy
                     var googleAuthNSection = this.Configuration.GetSection("Authentication:Google");
                     o.ClientId = googleAuthNSection["ClientId"];
                     o.ClientSecret = googleAuthNSection["ClientSecret"];
-                    o.AuthorizationEndpoint += "?prompt=consent"; // Hack so we always get a refresh token, it only comes on the first authorization response
                     o.Scope.Add("openid");
                     o.Scope.Add("profile");
                     o.Scope.Add("email");
@@ -77,9 +72,10 @@ namespace Agh.eSzachy
                     o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email", ClaimValueTypes.Email);
                     o.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
                     o.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
-                    o.ClaimActions.MapJsonSubKey("urn:google:image", "image", "url");
                 })
-                .AddIdentityServerJwt();
+                .AddIdentityServerJwt()
+            ;
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>());
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -118,7 +114,6 @@ namespace Agh.eSzachy
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseIdentityServer();
             app.UseAuthorization();

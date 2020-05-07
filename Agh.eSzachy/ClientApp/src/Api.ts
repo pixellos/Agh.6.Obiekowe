@@ -51,12 +51,20 @@ export class GameHub {
         return this.connection.invoke('Move', roomName, from, to);
     }
 
-    ready(roomName: string): Promise<void> {
-        return this.connection.invoke('Ready', roomName);
+    subscribe(roomName: string): Promise<void> {
+        return this.connection.invoke('Subscribe', roomName);
     }
 
-    historicalForPlayer(email: string): Promise<ChessBoardHistory[]> {
-        return this.connection.invoke('HistoricalForPlayer', email);
+    map(model: ChessBoardModel): Promise<ChessBoard> {
+        return this.connection.invoke('Map', model);
+    }
+
+    mapHistory(model: ChessBoardModel): Promise<ChessBoardHistory> {
+        return this.connection.invoke('MapHistory', model);
+    }
+
+    ready(roomName: string): Promise<void> {
+        return this.connection.invoke('Ready', roomName);
     }
 
     historicalFor(roomName: string): Promise<ChessBoardHistory[]> {
@@ -81,28 +89,44 @@ export interface IGameHubCallbacks {
 }
 
 export interface Room {
-    Messages: Message[] | undefined;
-    Id: string | undefined;
-    Name: string | undefined;
+    Messages: Message[];
+    Id: string;
+    Name: string;
     Created: Date;
 }
 
 export interface Message {
-    Text: string | undefined;
-    UserId: string | undefined;
+    Text: string;
+    UserId: string;
     Created: Date;
 }
 
-export interface ChessBoardHistory {
-    History: { [key: string]: ChessBoard; } | undefined;
+export interface ChessBoardModel {
+    Board: { [key: string]: BasePawn; };
+    Started: Date;
+    LastMove: Date;
+}
+
+export interface BasePawn {
+    player: Player;
+}
+
+export enum Player {
+    One = 0,
+    Two = 1,
 }
 
 export interface ChessBoard {
-    Pawns: Pawn[] | undefined;
+    Pawns: Pawn[];
 }
 
 export interface Pawn {
-    IsWhile: boolean;
-    Type: boolean;
-    Position: boolean;
+    IsPlayerOne: boolean;
+    Type: string;
+    Row: number;
+    Col: number;
+}
+
+export interface ChessBoardHistory {
+    History: { [key: string]: ChessBoard; };
 }

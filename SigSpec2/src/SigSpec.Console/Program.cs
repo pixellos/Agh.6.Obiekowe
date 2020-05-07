@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Agh.eSzachy.Hubs;
 
 namespace SigSpec
 {
@@ -29,7 +30,6 @@ namespace SigSpec
             });
 
             var json = document.ToJson();
-
             Console.WriteLine("\nGenerated SigSpec document:");
             Console.WriteLine(json);
 

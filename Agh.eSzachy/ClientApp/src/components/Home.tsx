@@ -1,15 +1,13 @@
-import React, { Component, useState, useEffect } from "react";
+import React, {  useState, useEffect } from "react";
 import {
   HubConnectionBuilder,
   HubConnectionState,
-  HttpTransportType,
 } from "@aspnet/signalr";
 import { RoomHub, Room } from "../Api";
 import authService from "./api-authorization/AuthorizeService";
 
 const initial = {
   hub: {} as RoomHub,
-  data: [] as Room[],
   message: "",
   room: "",
 };
@@ -18,6 +16,7 @@ export const Home = () => {
   authService.getAccessToken();
 
   const [state, setState] = useState(initial);
+  const [dataState, setDataState] = useState([] as Room[]);
 
   useEffect(() => {
     (async () => {
@@ -34,31 +33,25 @@ export const Home = () => {
       const hub = new RoomHub(c);
       hub.registerCallbacks({
         refresh: (r) => {
-          setState({ ...state, data: r, hub });
+          setDataState(r);
         },
         refreshSingle: (s) => {
-          const items = state.data.filter((x) => x.Id !== s.Id);
-          const toAdd = items.concat(s);
-          setState({
-            ...state,
-            data: toAdd,
-            hub,
-          });
+          setDataState([s]);
         },
         send: (m) => {},
       });
       if (c.state === HubConnectionState.Disconnected) {
         await c.start();
         debugger;
-        setState({ ...state, hub: hub });
+        setState({room: '', message:'', hub: hub });
       }
     })();
-  }, [state.hub]);
+  }, [state.hub, setDataState]);
 
   return (
     <div>
       <h1>Hello, world!</h1>
-      <div>{JSON.stringify(state.data)}</div>
+      <div>{JSON.stringify(dataState)}</div>
       Message
       <input
         onChange={(x) => setState({ ...state, message: x.target.value })}

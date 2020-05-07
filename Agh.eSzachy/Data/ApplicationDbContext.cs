@@ -1,16 +1,13 @@
 ﻿using Agh.eSzachy.Models;
 using IdentityServer4.EntityFramework.Options;
+using Innofactor.EfCoreJsonValueConverter;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Agh.eSzachy.Data
 {
+
     public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
         public ApplicationDbContext(
@@ -23,6 +20,8 @@ namespace Agh.eSzachy.Data
         public DbSet<RoomEntity> Rooms { get; set; }
         public DbSet<MessageEntity> Messages { get; set; }
         public DbSet<RoomUsers> RoomUsers { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -30,8 +29,12 @@ namespace Agh.eSzachy.Data
             builder.Entity<RoomUsers>().HasOne(x => x.Room).WithMany(x => x.ActiveUsers).HasForeignKey(x => x.RoomId);
             builder.Entity<RoomUsers>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
 
-            builder.Entity<GameEntity>().HasOne(x => x.Room).WithMany(x => x.ArchivedGames).HasForeignKey(x => x.RoomId);
-            builder.Entity<RoomEntity>().HasOne(x => x.ActualGame).WithOne();
+            builder.Entity<RoomEntity>().HasMany(x => x.Games).WithOne(x => x.Room).HasForeignKey(x => x.RoomId);
+
+            builder.Entity<GameEntity>().HasOne(x => x.PlayerOne).WithMany().HasForeignKey(x => x.PlayerOneId).IsRequired(false).OnDelete(DeleteBehavior.ClientSetNull);
+            builder.Entity<GameEntity>().HasOne(x => x.PlayerTwo).WithMany().HasForeignKey(x => x.PlayerTwoId).IsRequired(false).OnDelete(DeleteBehavior.ClientSetNull);
+
+            builder.AddJsonFields();
         }
     }
 }

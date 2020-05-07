@@ -1,6 +1,4 @@
-﻿using Agh.eSzachy.Data;
-using Agh.eSzachy.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,7 +15,6 @@ namespace Agh.eSzachy.Data
 
         public virtual string ActualGameId { get; set; }
 
-        public virtual GameEntity ActualGame { get; set; }
-        public virtual ICollection<GameEntity> ArchivedGames { get; set; }
+        public virtual ICollection<GameEntity> Games { get; set; }
     }
 }

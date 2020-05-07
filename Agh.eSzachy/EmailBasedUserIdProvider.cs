@@ -25,7 +25,7 @@ namespace Agh.eSzachy
                 var id = connection.User?.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = userStore.FindByIdAsync(id, CancellationToken.None);
                 user.ConfigureAwait(false);
-                var r = user.Result.Email;
+                var r = user.Result.Id;
                 return r;
             }
         }
