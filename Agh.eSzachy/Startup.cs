@@ -17,6 +17,7 @@ using Agh.eSzachy.Hubs;
 using Agh.eSzachy.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 
 namespace Agh.eSzachy
 {
@@ -52,7 +53,7 @@ namespace Agh.eSzachy
                     //, x => x.ServerVersion(new Version(5, 5, 62), ServerType.MySql)
                     ));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
