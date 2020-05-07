@@ -1,4 +1,5 @@
 ﻿using Agh.eSzachy.Data;
+using Agh.eSzachy.Hubs;
 using Agh.eSzachy.Models;
 using Agh.eSzachy.Models.Chess;
 using LanguageExt;
@@ -30,7 +31,7 @@ namespace Agh.eSzachy.Services
             };
 
             var pawns = fun((Func<int, int> col, Func<int, int> row, Player p) =>
-                Range(0, 8).Select(x => (new Position(row(1), col(x)), new Pawn(p) as BasePawn))
+                Range(0, 8).Select(x => (new Position(row(1), col(x)), new Models.Chess.Pawn(p) as BasePawn))
                 .Concat(List<(Position, BasePawn)>(
                     (new Position(row(0), col(0)), new Rook(p)),
                     (new Position(row(0), col(1)), new Knight(p)),
@@ -86,7 +87,7 @@ namespace Agh.eSzachy.Services
             }
         }
 
-        public Task Move(Client client, Room room, Position @from, Position target)
+        public Task Move(Client client, Room room, PawnPosition @from, PawnPosition target)
         {
             throw new System.NotImplementedException();
         }
