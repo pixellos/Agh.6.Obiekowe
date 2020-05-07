@@ -39,7 +39,7 @@ export const Home = () => {
       });
       if (c.state === HubConnectionState.Disconnected) {
         await c.start();
-        debugger;
+        // debugger;
         setState({ room: "", message: "", hub: hub });
       }
     })();

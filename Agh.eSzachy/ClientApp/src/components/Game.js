@@ -4,7 +4,7 @@ import Board from "./Board.js";
 import FallenSoldierBlock from "./FallenSoldierBlock.js";
 import initialiseChessBoard from "../helpers/board-initialiser.js";
 
-export default class Game extends React.Component {
+export class Game extends React.Component {
   constructor() {
     super();
     this.state = {
