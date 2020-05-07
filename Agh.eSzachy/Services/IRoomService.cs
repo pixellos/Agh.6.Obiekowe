@@ -12,6 +12,8 @@ namespace Agh.eSzachy.Services
         Result<Room> SendMessage(Room r, Client c, string m);
         Task<Result<Room[]>> Status(Client c);
 
+        Task<Room> Get(string id);
+
         Result<string[]> GetAllRoomNames();
     }
 }

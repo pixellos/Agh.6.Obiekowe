@@ -37,6 +37,7 @@ namespace Agh.eSzachy
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IRoomService, RoomService>();
+            services.AddTransient<IGameService, GameService>();
             services.AddCors(options =>
             {
                 options.AddPolicy(

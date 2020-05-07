@@ -5,6 +5,7 @@ using Agh.eSzachy.Models.Chess;
 using LanguageExt;
 using LanguageExt.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static LanguageExt.Prelude;
@@ -87,14 +88,105 @@ namespace Agh.eSzachy.Services
             }
         }
 
-        public Task Move(Client client, Room room, PawnPosition @from, PawnPosition target)
+        public async Task Move(Client client, Room room, PawnPosition @from, PawnPosition target)
         {
-            throw new System.NotImplementedException();
+            var clientRoomsResult = await this.RoomService.Status(client);
+            var clientRooms = clientRoomsResult.Match(x => x, e => throw e);
+            if (clientRooms.FirstOrDefault(r => r.Id == room.Id) is Room r)
+            {
+                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == room.Id);
+                if (actualGame == null)
+                {
+                    throw new Exception("There is no room");
+                }
+                else
+                {
+                    var lastMove = actualGame.Moves.Last();
+                    var player = actualGame.PlayerOneId == client.Id ? Player.One : actualGame.PlayerTwoId == client.Id ? Player.Two : throw new Exception("Player can be matched");
+
+                    if ((int)lastMove.Player != (int)player)
+                    {
+                        var board = this.Starting();
+                        foreach (var item in actualGame.Moves)
+                        {
+                            board = UpdatePosition(board, item);
+                        }
+                        board = UpdatePosition(board, new MoveJsonEntity
+                        {
+                            From =
+                            {
+                                Column = @from.Col,
+                                Row = @from.Row
+                            },
+                            Player = (Data.Player)player
+                        });
+                        await ApplicationDbContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        throw new Exception("Player cannot make move two times in row");
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception("Client hadn't subscribed current room.");
+            }
+        }
+
+        private static ChessBoardModel UpdatePosition(ChessBoardModel board, MoveJsonEntity item)
+        {
+            var p = new Position()
+            {
+                Column = item.From.Column,
+                Row = item.From.Row
+            };
+            var pTarget = new Position
+            {
+                Column = item.To.Column,
+                Row = item.To.Row
+            };
+            var toChange = board.Board[p];
+            if ((int)toChange.player != (int)item.Player)
+            {
+                throw new Exception("Cannot change non player pawn");
+            }
+            var dict = new Dictionary<Position, BasePawn>(board.Board);
+            dict[p] = null;
+            dict[pTarget] = toChange;
+            board = new ChessBoardModel()
+            {
+                LastMove = DateTime.Now,
+                Started = board.Started,
+                Board = dict
+            };
+            return board;
         }
 
         public async Task<ChessBoardModel> Current(Room room)
         {
-            return this.Starting();
+            var seekedRoom = await this.RoomService.Get(room.Id);
+            if (seekedRoom is Room r)
+            {
+                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == room.Id);
+                if (actualGame == null)
+                {
+                    throw new Exception("There is no gme");
+                }
+                else
+                {
+                    var board = this.Starting();
+                    foreach (var item in actualGame.Moves)
+                    {
+                        board = UpdatePosition(board, item);
+                    }
+                    return board;
+                }
+            }
+            else
+            {
+                throw new Exception("Client hadn't subscribed current room.");
+            }
         }
 
         public async Task<ChessBoardModel[]> All(Room room)
