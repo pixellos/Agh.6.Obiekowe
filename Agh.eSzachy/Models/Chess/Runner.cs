@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Agh.eSzachy.Models.Chess
 {
-    public class Bishop :BasePawn
+    public class Bishop : BasePawn
     {
         public Bishop(Player player, bool isColiding = true) : base(player, isColiding)
         {
