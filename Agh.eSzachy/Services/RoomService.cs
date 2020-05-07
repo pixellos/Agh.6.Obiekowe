@@ -42,11 +42,9 @@ namespace Agh.eSzachy.Services
                 try
                 {
                     this.DbContext.SaveChanges();
-
                 }
                 catch (Exception e)
                 {
-
                     throw;
                 }
                 return new Result<Room>(Map(re));
@@ -59,11 +57,15 @@ namespace Agh.eSzachy.Services
 
         public Result<Room> Join(Client c, string roomName)
         {
-            var room = this.DbContext.Rooms.FirstOrDefault(x => x.Title == roomName);
+            var room = this.DbContext.Rooms.Include(x => x.ActiveUsers).FirstOrDefault(x => x.Title == roomName);
             if (room != null)
             {
                 var user = this.UserStore.FindByIdAsync(c.Id, CancellationToken.None).Result;
-                room.ActiveUsers.Add(user.ToRoomUsers());
+                if (room.ActiveUsers.All(x => x.UserId != user.Id))
+                {
+                    room.ActiveUsers.Add(user.ToRoomUsers());
+                }
+
                 this.DbContext.SaveChanges();
                 return Map(room);
             }
@@ -116,7 +118,7 @@ namespace Agh.eSzachy.Services
         {
             var withUsers = this.DbContext.Rooms.Include(x => x.ActiveUsers);
             var user = await this.UserStore.FindByIdAsync(c.Id, CancellationToken.None);
-            if(user == null)
+            if (user == null)
             {
                 return new Result<Room[]>(new Room[] { });
             }
