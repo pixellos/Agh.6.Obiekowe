@@ -19,7 +19,7 @@ namespace Agh.eSzachy.Hubs
         public IGameService GameService { get; }
         public IRoomService RoomService { get; }
 
-        public async Task Move(string roomName, string from, string to)
+        public async Task Move(string roomName, PawnPosition from, PawnPosition to)
         {
             var client = new Models.Client(this.Context.UserIdentifier);
             var room = await this.RoomService.Status(client);
