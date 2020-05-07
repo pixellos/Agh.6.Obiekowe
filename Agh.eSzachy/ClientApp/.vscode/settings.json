@@ -1,0 +1,49 @@
+{
+    "prettier.disableLanguages": [
+      "css",
+      "jsonc",
+      "less",
+      "mdx",
+      "mongo",
+      "postcss",
+      "scss",
+      "vue",
+      "yaml"
+    ],
+    "eslint.probe": [
+      "json",
+      "javascriptreact",
+      "typescriptreact"
+    ],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "css.validate": false,
+    "stylelint.autoFixOnSave": true,
+    "stylelint.validate": ["css", "pscss"],
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false,
+    "editor.tabSize": 2,
+    "javascript.format.enable": false,
+    "javascript.validate.enable": false,
+    "files.associations": {
+      "*.js": "javascriptreact",
+      "*.tsx": "typescriptreact",
+      "*.pcss": "css"
+    },
+    "prettier.ignorePath": ".prettierignore",
+    "typescript.check.npmIsInstalled": true,
+    "typescript.format.enable": false,
+    "typescript.validate.enable": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": false
+    },
+    "[css]": {
+      "editor.codeActionsOnSave": {
+        "source.fixAll.stylelint": true
+      }
+    },
+    "eslint.run": "onSave",
+    "prettier.run": "onSave",
+    "eslint.codeActionOnSave.mode": "all",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "tslint.enable": false
+  }

@@ -1,8 +1,5 @@
-import React, {  useState, useEffect } from "react";
-import {
-  HubConnectionBuilder,
-  HubConnectionState,
-} from "@aspnet/signalr";
+import React, { useState, useEffect } from "react";
+import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import { RoomHub, Room } from "../Api";
 import authService from "./api-authorization/AuthorizeService";
 
@@ -43,7 +40,7 @@ export const Home = () => {
       if (c.state === HubConnectionState.Disconnected) {
         await c.start();
         debugger;
-        setState({room: '', message:'', hub: hub });
+        setState({ room: "", message: "", hub: hub });
       }
     })();
   }, [state.hub, setDataState]);

@@ -1,16 +1,16 @@
-import Bishop from '../pieces/Bishop.js';
-import King from '../pieces/King.js';
-import Knight from '../pieces/Knight.js';
-import Pawn from '../pieces/Pawn.js';
-import Queen from '../pieces/Queen.js';
-import Rook from '../pieces/Rook.js';
+import Bishop from "../pieces/Bishop.js";
+import King from "../pieces/King.js";
+import Knight from "../pieces/Knight.js";
+import Pawn from "../pieces/Pawn.js";
+import Queen from "../pieces/Queen.js";
+import Rook from "../pieces/Rook.js";
 
-export default function initialiseChessBoard(){
+export default function initialiseChessBoard() {
   const squares = Array(64).fill(null);
 
-  for(let i = 8; i < 16; i++){
+  for (let i = 8; i < 16; i++) {
     squares[i] = new Pawn(2);
-    squares[i+40] = new Pawn(1);
+    squares[i + 40] = new Pawn(1);
   }
   squares[0] = new Rook(2);
   squares[7] = new Rook(2);
