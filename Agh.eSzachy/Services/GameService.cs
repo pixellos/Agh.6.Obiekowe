@@ -126,16 +126,16 @@ namespace Agh.eSzachy.Services
                 var lastMove = actualGame.Moves.Last();
                 var player = actualGame.PlayerOneId == client.Id ? Player.One : actualGame.PlayerTwoId == client.Id ? Player.Two : throw new Exception("Player can be matched");
 
-                if ((int)lastMove.Player != (int)player)
+                if (lastMove.From == null || (int)lastMove.Player != (int)player)
                 {
                     var board = this.Starting();
                     foreach (var item in actualGame.Moves)
                     {
                         board = UpdatePosition(board, item);
                     }
-                    board = UpdatePosition(board, new MoveJsonEntity
+                    var mje = new MoveJsonEntity
                     {
-                        From = 
+                        From =
                             {
                                 Column = @from.Col,
                                 Row = @from.Row
@@ -145,8 +145,12 @@ namespace Agh.eSzachy.Services
                                 Column = target.Col,
                                 Row = target.Row
                             },
-                        Player = (Data.Player)player
-                    });
+                        Player = (Data.Player)((int)player + 1)
+                    };
+                    board = UpdatePosition(board,mje);
+                    actualGame.Moves.Add(mje);
+                    actualGame.Moves = actualGame.Moves;
+
                     await ApplicationDbContext.SaveChangesAsync();
                 }
                 else
@@ -182,7 +186,7 @@ namespace Agh.eSzachy.Services
                 throw new Exception("Cannot change non player pawn");
             }
             var dict = new Dictionary<Position, BasePawn>(board.Board);
-            dict[p] = null;
+            dict.Remove(p);
             dict[pTarget] = toChange;
             board = new ChessBoardModel()
             {

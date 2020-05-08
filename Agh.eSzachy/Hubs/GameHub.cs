@@ -49,11 +49,11 @@ namespace Agh.eSzachy.Hubs
         {
             return new ChessBoard
             {
-                Pawns = model.Board.Select(x => new Pawn
+                Pawns = model.Board.Where(x => x.Value != null).Select(x => new Pawn
                 {
                     Col = x.Key.Column,
                     Row = x.Key.Row,
-                    IsPlayerOne = x.Value.player == Models.Chess.Player.One,
+                    IsPlayerOne = (x.Value?.player ?? Models.Chess.Player.One) == Models.Chess.Player.One,
                     Type = x.Value.GetType().Name
                 }).ToArray()
             };
@@ -63,7 +63,7 @@ namespace Agh.eSzachy.Hubs
         {
             return new ChessBoardHistory
             {
-                
+
             };
         }
 

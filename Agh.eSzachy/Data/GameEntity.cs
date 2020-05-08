@@ -7,8 +7,8 @@ namespace Agh.eSzachy.Data
 {
     public enum Player
     {
-        One = 1,
-        Two = 2
+        One = 0,
+        Two = 1
     }
 
     public class PositionEntity
