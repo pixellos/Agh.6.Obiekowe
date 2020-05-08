@@ -26,6 +26,8 @@ namespace Agh.eSzachy.Hubs
             var targetRoom = room.Map(x => x.First(el => el.Name == roomName));
             var ready = await targetRoom.MapAsync(async x =>
             {
+                await this.GameService.Move(client, x, from, to);
+                await this.Refresh(x);
                 return Unit.Default;
             });
         }

@@ -57,30 +57,31 @@ namespace Agh.eSzachy.Services
             var clientRooms = clientRoomsResult.Match(x => x, e => throw e);
             if (clientRooms.FirstOrDefault(r => r.Id == room.Id) is Room r)
             {
-                //var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.Waiting && x.RoomId == room.Id);
-                //if (actualGame == null)
-                //{
-                //    actualGame = new GameEntity
-                //    {
-                //        PlayerOneId = client.Id,
-                //        State = GameState.Waiting,
-                //        RoomId = r.Id
-                //    };
-                //    ApplicationDbContext.Add(actualGame);
-                //    await ApplicationDbContext.SaveChangesAsync();
-                //}
-                //else
-                //{
-                //    if (actualGame.PlayerOneId == client.Id)
-                //    {
-                //        throw new Exception("Player already ready");
-                //    }
-                //    else
-                //    {
-                //        actualGame.PlayerTwoId = client.Id;
-                //        await ApplicationDbContext.SaveChangesAsync();
-                //    }
-                //}
+                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.Waiting && x.RoomId == room.Id);
+                if (actualGame == null)
+                {
+                    actualGame = new GameEntity
+                    {
+                        PlayerOneId = client.Id,
+                        State = GameState.Waiting,
+                        RoomId = r.Id
+                    };
+                    ApplicationDbContext.Add(actualGame);
+                    await ApplicationDbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    if (actualGame.PlayerOneId == client.Id)
+                    {
+                        throw new Exception("Player already ready");
+                    }
+                    else
+                    {
+                        actualGame.PlayerTwoId = client.Id;
+                        actualGame.State = GameState.InPlay;
+                        await ApplicationDbContext.SaveChangesAsync();
+                    }
+                }
             }
             else
             {
@@ -94,7 +95,7 @@ namespace Agh.eSzachy.Services
             var clientRooms = clientRoomsResult.Match(x => x, e => throw e);
             if (clientRooms.FirstOrDefault(r => r.Name == room.Name) is Room r)
             {
-                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == room.Id);
+                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x =>/* x.State == GameState.InPlay*/ x.RoomId == room.Id);
                 if (actualGame == null)
                 {
                     throw new Exception("There is no room");

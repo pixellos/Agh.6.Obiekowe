@@ -111,11 +111,11 @@ export class Game extends React.Component {
           squares[i] = squares[this.state.sourceSelection];
           squares[this.state.sourceSelection] = null;
 
-          const columnFrom = this.state.sourceSelection % 8;
-          const rowFrom = Math.floor(this.state.sourceSelection / 8);
+          const rowFrom = this.state.sourceSelection % 8;
+          const columnFrom = Math.floor(this.state.sourceSelection / 8);
 
-          const columnTo = i % 8;
-          const rowTo = Math.floor(i / 8);
+          const rowTo = i % 8;
+          const columnTo = Math.floor(i / 8);
 
           this.state.gameHub.move(
             this.state.roomName,
