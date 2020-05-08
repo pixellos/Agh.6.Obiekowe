@@ -64,7 +64,8 @@ namespace Agh.eSzachy.Services
                     {
                         PlayerOneId = client.Id,
                         State = GameState.Waiting,
-                        RoomId = r.Id
+                        RoomId = r.Id,
+                        Moves = {}
                     };
                     ApplicationDbContext.Add(actualGame);
                     await ApplicationDbContext.SaveChangesAsync();
@@ -98,35 +99,59 @@ namespace Agh.eSzachy.Services
                 var actualGame = ApplicationDbContext.Games.FirstOrDefault(x =>/* x.State == GameState.InPlay*/ x.RoomId == room.Id);
                 if (actualGame == null)
                 {
-                    throw new Exception("There is no room");
-                }
-                else
-                {
-                    var lastMove = actualGame.Moves.Last();
-                    var player = actualGame.PlayerOneId == client.Id ? Player.One : actualGame.PlayerTwoId == client.Id ? Player.Two : throw new Exception("Player can be matched");
-
-                    if ((int)lastMove.Player != (int)player)
+                    var items = new List<MoveJsonEntity>
                     {
-                        var board = this.Starting();
-                        foreach (var item in actualGame.Moves)
-                        {
-                            board = UpdatePosition(board, item);
-                        }
-                        board = UpdatePosition(board, new MoveJsonEntity
-                        {
-                            From =
+                        new MoveJsonEntity(){ 
+                        Player = (Data.Player)7}
+                    };
+                    actualGame = new GameEntity
+                    {
+                        PlayerOneId = client.Id,
+                        State = GameState.InPlay,
+                        RoomId = r.Id,
+                        Moves = items
+                    };
+                    ApplicationDbContext.Add(actualGame);
+                    try
+                    {
+
+                    await ApplicationDbContext.SaveChangesAsync();
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+                }
+                var lastMove = actualGame.Moves.Last();
+                var player = actualGame.PlayerOneId == client.Id ? Player.One : actualGame.PlayerTwoId == client.Id ? Player.Two : throw new Exception("Player can be matched");
+
+                if ((int)lastMove.Player != (int)player)
+                {
+                    var board = this.Starting();
+                    foreach (var item in actualGame.Moves)
+                    {
+                        board = UpdatePosition(board, item);
+                    }
+                    board = UpdatePosition(board, new MoveJsonEntity
+                    {
+                        From = 
                             {
                                 Column = @from.Col,
                                 Row = @from.Row
                             },
-                            Player = (Data.Player)player
-                        });
-                        await ApplicationDbContext.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        throw new Exception("Player cannot make move two times in row");
-                    }
+                        To =
+                            {
+                                Column = target.Col,
+                                Row = target.Row
+                            },
+                        Player = (Data.Player)player
+                    });
+                    await ApplicationDbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new Exception("Player cannot make move two times in row");
                 }
             }
             else
@@ -137,6 +162,10 @@ namespace Agh.eSzachy.Services
 
         private static ChessBoardModel UpdatePosition(ChessBoardModel board, MoveJsonEntity item)
         {
+            if(item.To == null || item.From == null || item.Player == (Data.Player)7)
+            {
+                return board;
+            }
             var p = new Position()
             {
                 Column = item.From.Column,

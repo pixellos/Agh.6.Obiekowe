@@ -16,12 +16,11 @@ namespace Agh.eSzachy.Data
         public int Row { get; set; }
         public int Column { get; set; }
     }
-
     public class MoveJsonEntity
     {
         public Player Player { get; set; }
-        public PositionEntity From { get; set; }
-        public PositionEntity To { get; set; }
+        public PositionEntity? From { get; set; } = new PositionEntity();
+        public PositionEntity? To { get; set; } = new PositionEntity();
     }
 
     public class GameEntity

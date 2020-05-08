@@ -33,8 +33,7 @@ namespace Agh.eSzachy.Data
 
             builder.Entity<GameEntity>().HasOne(x => x.PlayerOne).WithMany().HasForeignKey(x => x.PlayerOneId).IsRequired(false).OnDelete(DeleteBehavior.ClientSetNull);
             builder.Entity<GameEntity>().HasOne(x => x.PlayerTwo).WithMany().HasForeignKey(x => x.PlayerTwoId).IsRequired(false).OnDelete(DeleteBehavior.ClientSetNull);
-
-            builder.AddJsonFields();
+            builder.Entity<GameEntity>().Property(x => x.Moves).HasJsonValueConversion();
         }
     }
 }
