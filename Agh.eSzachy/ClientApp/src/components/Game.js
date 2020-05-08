@@ -2,7 +2,7 @@ import React from "react";
 
 import Board from "./Board.js";
 import FallenSoldierBlock from "./FallenSoldierBlock.js";
-import initialiseChessBoard from "../helpers/board-initialiser.js";
+import initialiseChessBoard from "../helpers/board-initialiser";
 import { GameHub } from "../Api.ts";
 import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import authService from "./api-authorization/AuthorizeService";
@@ -11,7 +11,7 @@ export class Game extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      squares: initialiseChessBoard(),
+      squares: Array(64).fill(null),
       whiteFallenSoldiers: [],
       blackFallenSoldiers: [],
       player: 1,
@@ -40,9 +40,15 @@ export class Game extends React.Component {
 
       const gameHub = new GameHub(c);
       gameHub.registerCallbacks({
-        refresh: (r) => {
+        refresh: (roomName, chessBoard) => {
           // setRoomList(r);
-          console.log("registerCallbacks.refresh", r);
+          console.log(
+            "gameHub.registerCallbacks.refresh",
+            roomName,
+            chessBoard
+          );
+
+          this.setState({ squares: initialiseChessBoard({ chessBoard }) });
         },
         send: (m) => {},
       });
@@ -50,6 +56,7 @@ export class Game extends React.Component {
       if (c.state === HubConnectionState.Disconnected) {
         await c.start();
         gameHub.refresh({ name: this.state.roomName });
+        // gameHub.ready(this.state.roomName);
         this.setState({ gameHub });
       }
     })();
@@ -72,6 +79,22 @@ export class Game extends React.Component {
           ...squares[i].style,
           backgroundColor: "rgb(111, 143, 114)",
         };
+
+        // for (let index = 0; index < 64; index++) {
+        //   if (index === i) continue;
+
+        //   const isMovePossible = squares[i].isMovePossible(i, index);
+        //   const srcToDestPath = squares[i].getSrcToDestPath(i, index);
+        //   const isMoveLegal = this.isMoveLegal(srcToDestPath);
+
+        //   if (isMovePossible && isMoveLegal) {
+        //     squares[index].style = {
+        //       ...squares[index].style,
+        //       backgroundColor: "rgb(222, 143, 114)",
+        //     };
+        //   }
+        // }
+
         this.setState({
           status: "Choose destination for the selected piece",
           sourceSelection: i,
@@ -111,11 +134,12 @@ export class Game extends React.Component {
           squares[i] = squares[this.state.sourceSelection];
           squares[this.state.sourceSelection] = null;
 
-          const rowFrom = this.state.sourceSelection % 8;
-          const columnFrom = Math.floor(this.state.sourceSelection / 8);
+          const columnFrom = this.state.sourceSelection % 8;
+          const rowFrom = Math.floor(this.state.sourceSelection / 8);
 
-          const rowTo = i % 8;
-          const columnTo = Math.floor(i / 8);
+          const columnTo = i % 8;
+          const rowTo = Math.floor(i / 8);
+          console.log(columnFrom, rowFrom, columnTo, rowTo);
 
           this.state.gameHub.move(
             this.state.roomName,
