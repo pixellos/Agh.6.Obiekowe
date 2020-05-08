@@ -46,7 +46,7 @@ namespace Agh.eSzachy.Services
                 )
             );
 
-            var startingPawns = pawns(x => x, x => x, Player.One).Concat(pawns(x => 7 - x, x => x, Player.Two));
+            var startingPawns = pawns(x => x, x => x, Player.One).Concat(pawns(x => x, x => 7 - x, Player.Two));
             result.Board = startingPawns.ToDictionary(x => x.Item1, x => x.Item2);
             return result;
         }
@@ -92,7 +92,7 @@ namespace Agh.eSzachy.Services
         {
             var clientRoomsResult = await this.RoomService.Status(client);
             var clientRooms = clientRoomsResult.Match(x => x, e => throw e);
-            if (clientRooms.FirstOrDefault(r => r.Id == room.Id) is Room r)
+            if (clientRooms.FirstOrDefault(r => r.Name == room.Name) is Room r)
             {
                 var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == room.Id);
                 if (actualGame == null)
@@ -165,13 +165,13 @@ namespace Agh.eSzachy.Services
 
         public async Task<ChessBoardModel> Current(Room room)
         {
-            var seekedRoom = await this.RoomService.Get(room.Id);
+            var seekedRoom = await this.RoomService.Get(room.Name);
             if (seekedRoom is Room r)
             {
                 var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == room.Id);
                 if (actualGame == null)
                 {
-                    throw new Exception("There is no gme");
+                    return this.Starting();
                 }
                 else
                 {

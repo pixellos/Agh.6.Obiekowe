@@ -21,5 +21,6 @@ namespace Agh.eSzachy.Models.Chess
 
         public override bool Equals(object? obj) => obj is Position position && this.Row == position.Row && this.Column == position.Column;
         public override int GetHashCode() => HashCode.Combine(this.Row, this.Column);
+        public override string? ToString() => Newtonsoft.Json.JsonConvert.SerializeObject(this);
     }
 }

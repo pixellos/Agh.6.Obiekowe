@@ -146,6 +146,6 @@ namespace Agh.eSzachy.Services
             return results;
         }
 
-        public async Task<Room> Get(string id) => Map(this.DbContext.Rooms.First(x => x.Title == id));
+        public async Task<Room> Get(string name) => Map(this.DbContext.Rooms.First(x => x.Title == name));
     }
 }
