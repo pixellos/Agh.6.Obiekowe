@@ -67,6 +67,7 @@ namespace Agh.eSzachy.Hubs
 
         public async Task Refresh(Models.Room room)
         {
+            await this.Groups.AddToGroupAsync(this.Context.ConnectionId, room.Name);
             var currentGame = await this.GameService.Current(room);
             await this.Clients.Group(room.Name).Refresh(room.Name, Map(currentGame));
         }
