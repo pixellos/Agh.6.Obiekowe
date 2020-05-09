@@ -9,7 +9,7 @@ export const Home = withRouter(({ history }) => {
   authService.getAccessToken();
 
   const [hub, setHub] = useState<RoomHub>({} as RoomHub);
-  const [roomList, setRoomList] = useState<Room[]>([] as Room[]);
+  const [roomList, setRoomList] = useState<string[]>([] as string[]);
   const [newRoom, setNewRoom] = useState<string>("");
 
   useEffect(() => {
@@ -30,7 +30,8 @@ export const Home = withRouter(({ history }) => {
       const roomHub = new RoomHub(c);
       roomHub.registerCallbacks({
         refresh: (r) => {
-          setRoomList(r);
+          // setRoomList(r);
+          // console.log("123", r);
         },
         refreshSingle: (room) => {
           history.push(`/room/${room.Name}`);
@@ -43,6 +44,9 @@ export const Home = withRouter(({ history }) => {
         case HubConnectionState.Disconnected:
           await c.start();
 
+          const rooms = await roomHub.getAllRooms();
+          setRoomList(rooms);
+          // console.log("qwe", a);
           setHub(roomHub);
           break;
       }
@@ -76,17 +80,17 @@ export const Home = withRouter(({ history }) => {
         </span>
       </div>
       <>
-        {roomList.map((room) => (
-          <div key={room.Id}>
+        {roomList.map((roomName, index) => (
+          <div key={index}>
             <span>
-              <button onClick={(x) => hub.join(room.Name)}>Join</button>
+              <button onClick={(x) => hub.join(roomName)}>Join</button>
             </span>
 
             {/* <span>
               <button onClick={(x) => hub.leave(room.Name)}>leave</button>
             </span> */}
 
-            <span>Room: {room.Name}</span>
+            <span>Room: {roomName}</span>
           </div>
         ))}
       </>
