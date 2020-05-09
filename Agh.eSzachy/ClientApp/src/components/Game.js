@@ -20,6 +20,7 @@ export class Game extends React.Component {
       turn: "white",
       gameHub: null,
       roomName: props.match?.params?.name || null,
+      ready: false,
     };
   }
 
@@ -57,49 +58,58 @@ export class Game extends React.Component {
         await c.start();
         gameHub.refresh({ name: this.state.roomName });
         // gameHub.ready(this.state.roomName);
+
+        // gameHub.map()
         this.setState({ gameHub });
       }
     })();
+  }
+
+  componentDidUpdate() {
+    if (this.state.ready) {
+      this.state.gameHub.ready(this.state.roomName);
+      this.setState({ ready: false });
+    }
   }
 
   handleClick(i) {
     const squares = this.state.squares.slice();
 
     if (this.state.sourceSelection === -1) {
-      if (!squares[i] || squares[i].player !== this.state.player) {
-        this.setState({
-          status:
-            "Wrong selection. Choose player " + this.state.player + " pieces.",
-        });
-        if (squares[i]) {
-          squares[i].style = { ...squares[i].style, backgroundColor: "" };
-        }
-      } else {
-        squares[i].style = {
-          ...squares[i].style,
-          backgroundColor: "rgb(111, 143, 114)",
-        };
+      // if (!squares[i] || squares[i].player !== this.state.player) {
+      //   this.setState({
+      //     status:
+      //       "Wrong selection. Choose player " + this.state.player + " pieces.",
+      //   });
+      //   if (squares[i]) {
+      //     squares[i].style = { ...squares[i].style, backgroundColor: "" };
+      //   }
+      // } else {
+      squares[i].style = {
+        ...squares[i].style,
+        backgroundColor: "rgb(111, 143, 114)",
+      };
 
-        // for (let index = 0; index < 64; index++) {
-        //   if (index === i) continue;
+      // for (let index = 0; index < 64; index++) {
+      //   if (index === i) continue;
 
-        //   const isMovePossible = squares[i].isMovePossible(i, index);
-        //   const srcToDestPath = squares[i].getSrcToDestPath(i, index);
-        //   const isMoveLegal = this.isMoveLegal(srcToDestPath);
+      //   const isMovePossible = squares[i].isMovePossible(i, index);
+      //   const srcToDestPath = squares[i].getSrcToDestPath(i, index);
+      //   const isMoveLegal = this.isMoveLegal(srcToDestPath);
 
-        //   if (isMovePossible && isMoveLegal) {
-        //     squares[index].style = {
-        //       ...squares[index].style,
-        //       backgroundColor: "rgb(222, 143, 114)",
-        //     };
-        //   }
-        // }
+      //   if (isMovePossible && isMoveLegal) {
+      //     squares[index].style = {
+      //       ...squares[index].style,
+      //       backgroundColor: "rgb(222, 143, 114)",
+      //     };
+      //   }
+      // }
 
-        this.setState({
-          status: "Choose destination for the selected piece",
-          sourceSelection: i,
-        });
-      }
+      this.setState({
+        status: "Choose destination for the selected piece",
+        sourceSelection: i,
+      });
+      // }
     } else if (this.state.sourceSelection > -1) {
       squares[this.state.sourceSelection].style = {
         ...squares[this.state.sourceSelection].style,
@@ -187,6 +197,16 @@ export class Game extends React.Component {
   render() {
     return (
       <div>
+        <div style={{ marginBottom: "25px" }}>
+          <button
+            onClick={() => {
+              this.setState({ ready: true });
+            }}
+          >
+            Ready!
+          </button>
+        </div>
+
         <div className="game">
           <div className="game-board">
             <Board

@@ -9,8 +9,8 @@ export const Home = withRouter(({ history }) => {
   authService.getAccessToken();
 
   const [hub, setHub] = useState<RoomHub>({} as RoomHub);
-
   const [roomList, setRoomList] = useState<Room[]>([] as Room[]);
+  const [newRoom, setNewRoom] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -52,14 +52,41 @@ export const Home = withRouter(({ history }) => {
   return (
     <>
       <h2>Rooms</h2>
+      <div>
+        <input
+          type="text"
+          onChange={(x) => {
+            setNewRoom(x.target.value);
+          }}
+        />
+
+        <span>
+          <button
+            onClick={(x) => {
+              if (newRoom === "") {
+                return;
+              }
+
+              hub.create(newRoom);
+              setNewRoom("");
+            }}
+          >
+            Create new room
+          </button>
+        </span>
+      </div>
       <>
         {roomList.map((room) => (
           <div key={room.Id}>
-            <span>{room.Name}</span>
             <span>
-              <button onClick={(x) => hub.join(room.Name)}>join</button>
-              <button onClick={(x) => hub.leave(room.Name)}>leave</button>
+              <button onClick={(x) => hub.join(room.Name)}>Join</button>
             </span>
+
+            {/* <span>
+              <button onClick={(x) => hub.leave(room.Name)}>leave</button>
+            </span> */}
+
+            <span>Room: {room.Name}</span>
           </div>
         ))}
       </>
