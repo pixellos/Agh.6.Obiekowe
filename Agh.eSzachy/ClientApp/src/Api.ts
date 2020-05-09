@@ -103,6 +103,7 @@ export interface Message {
     Text: string;
     UserId: string;
     Created: Date;
+    UserName: string | undefined;
 }
 
 export interface PawnPosition {
@@ -119,6 +120,7 @@ export interface ChessBoardModel {
     Board: { [key: string]: BasePawn; };
     Started: Date;
     LastMove: Date;
+    State: GameStateModel;
 }
 
 export enum Player {
@@ -128,6 +130,12 @@ export enum Player {
 
 export interface BasePawn {
     player: Player;
+}
+
+export enum GameStateModel {
+    Waiting = 0,
+    InPlay = 1,
+    Finished = 2,
 }
 
 export interface ChessBoardDto {

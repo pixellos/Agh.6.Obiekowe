@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import { RoomHub, Room } from "../Api";
 import authService from "./api-authorization/AuthorizeService";
@@ -8,10 +8,12 @@ import { withRouter } from "react-router-dom";
 export const Home = withRouter(({ history }) => {
   authService.getAccessToken();
 
-  const [hub, setHub] = useState<RoomHub>({} as RoomHub);
+  const [hub, setHub] = useState<RoomHub | null>(null);
   const [roomList, setRoomList] = useState<string[]>([] as string[]);
   const [userRooms, setUserRooms] = useState<Room[]>([]);
   const [newRoom, setNewRoom] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [selected, setSelected] = useState<Room | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -30,10 +32,19 @@ export const Home = withRouter(({ history }) => {
 
       const roomHub = new RoomHub(c);
       roomHub.registerCallbacks({
-        refresh: (r) => {
+        refresh: async (r: Room[]) => {
           setUserRooms(r);
-          // setRoomList(r);
-          // console.log("123", r);
+          setSelected((oldSelected) => {
+            debugger;
+            const candidate = r.find((x) => x.Id == oldSelected?.Id);
+            if (candidate) {
+              return candidate;
+            } else {
+              return oldSelected;
+            }
+          });
+          const rooms = await roomHub.getAllRooms();
+          setRoomList(rooms);
         },
         refreshSingle: (room) => {
           history.push(`/room/${room.Name}`);
@@ -45,10 +56,8 @@ export const Home = withRouter(({ history }) => {
       switch (c.state) {
         case HubConnectionState.Disconnected:
           await c.start();
-
           const rooms = await roomHub.getAllRooms();
           setRoomList(rooms);
-          // console.log("qwe", a);
           setHub(roomHub);
           break;
       }
@@ -68,10 +77,9 @@ export const Home = withRouter(({ history }) => {
         <span>
           <button
             onClick={(x) => {
-              if (newRoom === "") {
+              if (newRoom === "" || !hub) {
                 return;
               }
-
               hub.create(newRoom);
               setNewRoom("");
             }}
@@ -84,32 +92,61 @@ export const Home = withRouter(({ history }) => {
         {roomList.map((roomName, index) => (
           <div key={index}>
             <span>
-              <button onClick={(x) => hub.join(roomName)}>Join</button>
+              <button onClick={(x) => hub && hub.join(roomName)}>Join</button>
             </span>
-
-            {/* <span>
-              <button onClick={(x) => hub.leave(room.Name)}>leave</button>
-            </span> */}
-
             <span>Room: {roomName}</span>
           </div>
         ))}
       </>
+      <div style={{ marginBottom: "50px" }}></div>
       <>
         <h2>User Rooms</h2>
-        {userRooms.map((roomName, index) => (
+        {userRooms.map((room, index) => (
           <div key={index}>
             <span>
-              <button onClick={(x) => hub.join(roomName.Name)}>Join</button>
+              <button onClick={(x) => hub && hub.join(room.Name)}>Join</button>
+              <button
+                onClick={(x) => {
+                  setSelected(room);
+                }}
+              >
+                Select
+              </button>
             </span>
-
-            {/* <span>
-              <button onClick={(x) => hub.leave(room.Name)}>leave</button>
-            </span> */}
-
-            <span>Room: {roomName.Name}</span>
+            <span>Room: {room.Name}</span>
           </div>
         ))}
+        <div style={{ marginBottom: "50px" }}></div>
+
+        {selected && (
+          <div>
+            Messages
+            {selected.Messages.map((m, i) => (
+              <div key={i}>
+                {m.Created} {m.UserName}:{m.Text}
+              </div>
+            ))}
+            <div>
+              <input
+                type="text"
+                onChange={(x) => {
+                  setMessage(x.target.value);
+                }}
+              />
+              <span>
+                <button
+                  onClick={(x) => {
+                    if (message && hub) {
+                      hub.send(selected.Name, message);
+                    }
+                  }}
+                >
+                  Send
+                </button>
+              </span>
+            </div>
+          </div>
+        )}
       </>
     </>
   );

@@ -20,7 +20,6 @@ export default class App extends Component {
     return (
       <Layout>
         <AuthorizeRoute exact path="/" component={Home} />
-        <AuthorizeRoute path="/fetch-data" component={FetchData} />
         <AuthorizeRoute path="/room/:name" component={Game} />
 
         <Route

@@ -23,7 +23,7 @@ namespace Agh.eSzachy.Hubs
             await room.MapAsync(async x =>
             {
                 await this.Groups.AddToGroupAsync(this.Context.ConnectionId, x.Name);
-                await this.Clients.Group(x.Name).RefreshSingle(x);
+                await this.Refresh();
                 return x;
             });
         }
@@ -54,16 +54,24 @@ namespace Agh.eSzachy.Hubs
             return this.RoomService.GetAllRoomNames().Match(x => x, x => throw x);
         }
 
-        public Task Send(string roomId, string message)
+        public async Task Send(string roomId, string message)
         {
             var m = this.RoomService.SendMessage(new Room { Id = roomId }, this.User, message);
-            m.Map(x =>
+            await m.MapAsync(async x =>
             {
-                this.Clients.Groups(new[] { roomId }).RefreshSingle(x);
+                await this.Refresh();
                 return x;
             });
+        }
 
-            return Task.CompletedTask;
+        private async Task Refresh()
+        {
+            var status = await this.RoomService.Status(this.User);
+            await status.MapAsync(async x =>
+            {
+                await this.Clients.All.Refresh(x);
+                return Unit.Default;
+            });
         }
 
         public async override Task OnConnectedAsync()

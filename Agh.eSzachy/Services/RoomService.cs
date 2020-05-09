@@ -122,7 +122,7 @@ namespace Agh.eSzachy.Services
             {
                 return new Result<Room[]>(new Room[] { });
             }
-            var activeRooms = withUsers.Where(x => x.ActiveUsers.Any(u => u.UserId == user.Id)).Include(x => x.Messages);
+            var activeRooms = withUsers.Where(x => x.ActiveUsers.Any(u => u.UserId == user.Id)).Include(x => x.Messages).ThenInclude(x=>x.Client);
             var results = activeRooms.Select(x => Map(x)).ToArray();
             return new Result<Room[]>(results);
         }
@@ -134,7 +134,8 @@ namespace Agh.eSzachy.Services
             Created = x.CreateDate,
             Messages = x.Messages?.Select(x => new Message()
             {
-                UserId = x.Client.Id,
+                UserId = x.Client?.Id,
+                UserName= x.Client?.NormalizedUserName,
                 Created = x.Date,
                 Text = x.Message
             }).ToList() ?? new List<Message>()
