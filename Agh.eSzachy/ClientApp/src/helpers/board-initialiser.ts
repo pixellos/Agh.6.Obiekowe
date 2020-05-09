@@ -4,10 +4,11 @@ import Knight from "../pieces/Knight.js";
 import Pawn from "../pieces/Pawn.js";
 import Queen from "../pieces/Queen.js";
 import Rook from "../pieces/Rook.js";
-import { ChessBoard } from "../Api";
+import Piece from "../pieces/Piece.js";
+import { ChessBoardDto } from "../Api";
 
 type initialiseChessBoardParams = {
-  chessBoard: ChessBoard;
+  chessBoard: ChessBoardDto;
   playerOneColor: number;
   playerTwoColor: number;
 };
@@ -21,7 +22,7 @@ export default function initialiseChessBoard({
     const index = pawn.Row * 8 + pawn.Col;
     const player = pawn.IsPlayerOne ? 2 : 1;
 
-    let pieceClass = null;
+    let pieceClass = null as any;
 
     switch (pawn.Type) {
       case "Pawn":

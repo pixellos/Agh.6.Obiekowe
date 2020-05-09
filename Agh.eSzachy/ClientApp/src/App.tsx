@@ -9,7 +9,7 @@ import AuthorizeRoute from "./components/api-authorization/AuthorizeRoute";
 import ApiAuthorizationRoutes from "./components/api-authorization/ApiAuthorizationRoutes";
 import { ApplicationPaths } from "./components/api-authorization/ApiAuthorizationConstants";
 
-import { Game } from "./components/Game.js";
+import { Game } from "./components/Game";
 
 import "./custom.css";
 

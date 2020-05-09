@@ -4,6 +4,6 @@ namespace Agh.eSzachy.Hubs
 {
     public interface IGameClient
     {
-        Task Refresh(string roomName, ChessBoard cb);
+        Task Refresh(string roomName, ChessBoardDto cb);
     }
 }

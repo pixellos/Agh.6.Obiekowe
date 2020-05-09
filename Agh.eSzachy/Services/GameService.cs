@@ -4,6 +4,7 @@ using Agh.eSzachy.Models;
 using Agh.eSzachy.Models.Chess;
 using LanguageExt;
 using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,10 +25,15 @@ namespace Agh.eSzachy.Services
             this.RoomService = roomService;
         }
 
-        private ChessBoardModel Starting()
+        private ChessBoardModel Starting(GameEntity gameEntity)
         {
             var result = new ChessBoardModel()
             {
+                State = (GameStateModel)(int)(gameEntity?.State ?? GameState.Waiting),
+                PlayerOneId = gameEntity?.PlayerOne?.Id,
+                PlayerOneName = gameEntity?.PlayerOne?.Email,
+                PlayerTwoId = gameEntity?.PlayerTwo?.Id,
+                PlayerTwoName = gameEntity?.PlayerTwo?.Email,
                 Started = DateTime.Now,
             };
 
@@ -57,7 +63,7 @@ namespace Agh.eSzachy.Services
             var clientRooms = clientRoomsResult.Match(x => x, e => throw e);
             if (clientRooms.FirstOrDefault(r => r.Id == room.Id) is Room r)
             {
-                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.Waiting && x.RoomId == room.Id);
+                var actualGame = this.ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.Waiting && x.RoomId == room.Id);
                 if (actualGame == null)
                 {
                     actualGame = new GameEntity
@@ -67,8 +73,8 @@ namespace Agh.eSzachy.Services
                         RoomId = r.Id,
                         Moves = new List<MoveJsonEntity>()
                     };
-                    ApplicationDbContext.Add(actualGame);
-                    await ApplicationDbContext.SaveChangesAsync();
+                    this.ApplicationDbContext.Add(actualGame);
+                    await this.ApplicationDbContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -78,10 +84,10 @@ namespace Agh.eSzachy.Services
                     }
                     else
                     {
-                        actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.Waiting && x.RoomId == room.Id);
+                        actualGame = this.ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.Waiting && x.RoomId == room.Id);
                         actualGame.PlayerTwoId = client.Id;
                         actualGame.State = GameState.InPlay;
-                        await ApplicationDbContext.SaveChangesAsync();
+                        await this.ApplicationDbContext.SaveChangesAsync();
                     }
                 }
             }
@@ -97,7 +103,7 @@ namespace Agh.eSzachy.Services
             var clientRooms = clientRoomsResult.Match(x => x, e => throw e);
             if (clientRooms.FirstOrDefault(r => r.Name == room.Name) is Room r)
             {
-                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x =>/* x.State == GameState.InPlay*/ x.RoomId == room.Id);
+                var actualGame = this.ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == room.Id);
                 if (actualGame == null)
                 {
                     var items = new List<MoveJsonEntity>();
@@ -108,11 +114,11 @@ namespace Agh.eSzachy.Services
                         RoomId = r.Id,
                         Moves = items
                     };
-                    ApplicationDbContext.Add(actualGame);
+                    this.ApplicationDbContext.Add(actualGame);
                     try
                     {
 
-                        await ApplicationDbContext.SaveChangesAsync();
+                        await this.ApplicationDbContext.SaveChangesAsync();
                     }
                     catch (Exception)
                     {
@@ -122,30 +128,31 @@ namespace Agh.eSzachy.Services
                 }
                 var player = actualGame.PlayerOneId == client.Id ? Player.One : actualGame.PlayerTwoId == client.Id ? Player.Two : throw new Exception("Player can be matched");
 
-                var board = this.Starting();
+                var board = this.Starting(actualGame);
+
                 foreach (var item in actualGame.Moves)
                 {
                     board = UpdatePosition(board, item);
                 }
                 var mje = new MoveJsonEntity
                 {
-                    From =
-                            {
-                                Column = @from.Col,
-                                Row = @from.Row
-                            },
-                    To =
-                            {
-                                Column = target.Col,
-                                Row = target.Row
-                            },
+                    From = new PositionEntity
+                    {
+                        Column = @from.Col,
+                        Row = @from.Row
+                    },
+                    To = new PositionEntity
+                    {
+                        Column = target.Col,
+                        Row = target.Row
+                    },
                     Player = (Data.Player)((int)player)
                 };
                 board = UpdatePosition(board, mje);
                 actualGame.Moves.Add(mje);
                 actualGame.Moves = actualGame.Moves;
 
-                await ApplicationDbContext.SaveChangesAsync();
+                await this.ApplicationDbContext.SaveChangesAsync();
             }
             else
             {
@@ -170,18 +177,24 @@ namespace Agh.eSzachy.Services
                 Row = item.To.Row
             };
             var toChange = board.Board[p];
-            if ((int)toChange.player != (int)item.Player)
-            {
-                throw new Exception("Cannot change non player pawn");
-            }
+            //if (board.LastMove != default && (int)toChange.player != (int)item.Player)
+            //{
+            //    throw new Exception("Cannot change non player pawn");
+            //}
             var dict = new Dictionary<Position, BasePawn>(board.Board);
             dict.Remove(p);
             dict[pTarget] = toChange;
             board = new ChessBoardModel()
             {
+                State = board.State,
+                PlayerOneId = board.PlayerOneId,
+                PlayerOneName = board.PlayerOneName,
+                PlayerTwoId = board.PlayerTwoId,
+                PlayerTwoName = board.PlayerTwoName,
                 LastMove = DateTime.Now,
                 Started = board.Started,
-                Board = dict
+                Board = dict,
+                CurrentPlayer = (Player)(int)(item?.Player ?? Data.Player.Two) == Player.One ? Player.Two : Player.One
             };
             return board;
         }
@@ -191,14 +204,19 @@ namespace Agh.eSzachy.Services
             var seekedRoom = await this.RoomService.Get(room.Name);
             if (seekedRoom is Room r)
             {
-                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x =>/* x.State == GameState.InPlay &&*/ x.RoomId == r.Id);
+                var actualGame = this.ApplicationDbContext.Games.Include(x=>x.PlayerOne).Include(x=>x.PlayerTwo).FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == r.Id);
                 if (actualGame == null)
                 {
-                    return this.Starting();
+                    actualGame = this.ApplicationDbContext.Games.Include(x => x.PlayerOne).Include(x => x.PlayerTwo).FirstOrDefault(x => x.State == GameState.Waiting  && x.RoomId == r.Id);
+                    if(actualGame != null)
+                    {
+                        return this.Starting(actualGame);
+                    }
+                    return this.Starting(null);
                 }
                 else
                 {
-                    var board = this.Starting();
+                    var board = this.Starting(actualGame);
                     foreach (var item in actualGame.Moves)
                     {
                         board = UpdatePosition(board, item);

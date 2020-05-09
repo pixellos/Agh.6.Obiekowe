@@ -20,12 +20,12 @@ namespace Agh.eSzachy.Areas.Identity.Pages.Account.Manage
 
         public IActionResult OnGet()
         {
-            if (RecoveryCodes == null || RecoveryCodes.Length == 0)
+            if (this.RecoveryCodes == null || this.RecoveryCodes.Length == 0)
             {
-                return RedirectToPage("./TwoFactorAuthentication");
+                return this.RedirectToPage("./TwoFactorAuthentication");
             }
 
-            return Page();
+            return this.Page();
         }
     }
 }

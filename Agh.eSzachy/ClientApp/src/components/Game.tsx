@@ -1,16 +1,31 @@
+// @ts-nocheck
 import React from "react";
 
 import Board from "./Board.js";
-import FallenSoldierBlock from "./FallenSoldierBlock.js";
+import FallenSoldierBlock from "./FallenSoldierBlock";
 import initialiseChessBoard from "../helpers/board-initialiser";
-import { GameHub } from "../Api.ts";
+import { GameHub, ChessBoardDto, BoardState, Player } from "../Api";
 import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import authService from "./api-authorization/AuthorizeService";
+import "./Game.css";
 
-export class Game extends React.Component {
+type stateType = {
+  squares: any[];
+  whiteFallenSoldiers: never[];
+  blackFallenSoldiers: never[];
+  player: number;
+  sourceSelection: number;
+  status: string;
+  turn: string;
+  gameHub: null;
+  roomName: any;
+  chessBoard: ChessBoardDto;
+};
+
+export class Game extends React.Component<any, stateType> {
   constructor(props) {
-    super();
-    this.state = {
+    super(props);
+    const s = {
       squares: Array(64).fill(null),
       whiteFallenSoldiers: [],
       blackFallenSoldiers: [],
@@ -20,13 +35,14 @@ export class Game extends React.Component {
       turn: "white",
       gameHub: null,
       roomName: props.match?.params?.name || null,
-      ready: false,
+      chessBoard: null as ChessBoardDto,
     };
+    this.state = s;
   }
 
   componentDidMount() {
     (async () => {
-      if (this.state.hub instanceof GameHub) {
+      if (this.state.gameHub instanceof GameHub) {
         return;
       }
 
@@ -49,7 +65,11 @@ export class Game extends React.Component {
             chessBoard
           );
 
-          this.setState({ squares: initialiseChessBoard({ chessBoard }) });
+          this.setState({
+            chessBoard: chessBoard,
+            player: chessBoard.Player,
+            squares: initialiseChessBoard({ chessBoard }),
+          });
         },
         send: (m) => {},
       });
@@ -57,19 +77,9 @@ export class Game extends React.Component {
       if (c.state === HubConnectionState.Disconnected) {
         await c.start();
         gameHub.refresh({ name: this.state.roomName });
-        // gameHub.ready(this.state.roomName);
-
-        // gameHub.map()
         this.setState({ gameHub });
       }
     })();
-  }
-
-  componentDidUpdate() {
-    if (this.state.ready) {
-      this.state.gameHub.ready(this.state.roomName);
-      this.setState({ ready: false });
-    }
   }
 
   handleClick(i) {
@@ -150,12 +160,15 @@ export class Game extends React.Component {
           const columnTo = i % 8;
           const rowTo = Math.floor(i / 8);
           console.log(columnFrom, rowFrom, columnTo, rowTo);
-
-          this.state.gameHub.move(
-            this.state.roomName,
-            { Col: columnFrom, Row: rowFrom },
-            { Col: columnTo, Row: rowTo }
-          );
+          try {
+            this.state.gameHub.move(
+              this.state.roomName,
+              { Col: columnFrom, Row: rowFrom },
+              { Col: columnTo, Row: rowTo }
+            );
+          } catch (e) {
+            console.debug("move", e);
+          }
 
           const player = this.state.player === 1 ? 2 : 1;
           const turn = this.state.turn === "white" ? "black" : "white";
@@ -195,18 +208,34 @@ export class Game extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <div style={{ marginBottom: "25px" }}>
+    const playerSection = (
+      <div class="grid-container">
+        <div class="grid-item">
+          <div id="player-turn-box" style={{ backgroundColor: "white" }}></div>
+          <div>First Player:</div>
+          <div>{this.state.chessBoard?.PlayerOne?.Name}</div>
+        </div>
+        <div class="grid-item">
+          <div id="player-turn-box" style={{ backgroundColor: "black" }}></div>
+          <div>Second Player:</div>
+          <div>{this.state.chessBoard?.PlayerTwo?.Name}</div>
+        </div>
+      </div>
+    );
+
+    const content =
+      this.state?.chessBoard?.State != BoardState.Started ? (
+        <div>
           <button
             onClick={() => {
-              this.setState({ ready: true });
+              this.state.gameHub.ready(this.state.roomName);
             }}
           >
             Ready!
           </button>
+          <div>Waiting for 2. player</div>
         </div>
-
+      ) : (
         <div className="game">
           <div className="game-board">
             <Board
@@ -215,13 +244,23 @@ export class Game extends React.Component {
             />
           </div>
           <div className="game-info">
-            <h3>Turn</h3>
+            <h3>
+              Turn{" "}
+              {this.state.chessBoard.Player == Player.One
+                ? this.state.chessBoard.PlayerOne.Name
+                : this.state.chessBoard.PlayerTwo.Name}
+            </h3>
             <div
               id="player-turn-box"
-              style={{ backgroundColor: this.state.turn }}
+              style={{
+                backgroundColor:
+                  this.state.chessBoard.Player === Player.One
+                    ? "white"
+                    : "black",
+              }}
             ></div>
-            <div className="game-status">{this.state.status}</div>
 
+            <div className="game-status">{this.state.status}</div>
             <div className="fallen-soldier-block">
               {
                 <FallenSoldierBlock
@@ -232,6 +271,14 @@ export class Game extends React.Component {
             </div>
           </div>
         </div>
+      );
+
+    return (
+      <div>
+        <div style={{ marginBottom: "25px" }}></div>
+        {playerSection}
+        <div style={{ marginBottom: "25px" }}></div>
+        {content}
       </div>
     );
   }

@@ -45,10 +45,37 @@ namespace Agh.eSzachy.Hubs
             });
         }
 
-        public ChessBoard Map(ChessBoardModel model)
+        private BoardState GetValue(GameStateModel val)
         {
-            return new ChessBoard
+            switch (val)
             {
+                case GameStateModel.Waiting:
+                    return BoardState.Idle;
+                case GameStateModel.Finished:
+                    return BoardState.PlayerOneWins;
+                case GameStateModel.InPlay:
+                    return BoardState.Started;
+                default: return 0;
+            };
+        }
+
+        public ChessBoardDto Map(ChessBoardModel model)
+        {
+
+            return new ChessBoardDto
+            {
+                State = this.GetValue(model.State),
+                PlayerOne = new PlayerDto
+                {
+                    Id = model.PlayerOneId,
+                    Name = model.PlayerOneName
+                },
+                PlayerTwo = new PlayerDto
+                {
+                    Name = model.PlayerTwoName,
+                    Id = model.PlayerTwoId
+                },
+                Player = model.CurrentPlayer,
                 Pawns = model.Board.Where(x => x.Value != null).Select(x => new Pawn
                 {
                     Col = x.Key.Column,
@@ -71,7 +98,7 @@ namespace Agh.eSzachy.Hubs
         {
             await this.Groups.AddToGroupAsync(this.Context.ConnectionId, room.Name);
             var currentGame = await this.GameService.Current(room);
-            await this.Clients.Group(room.Name).Refresh(room.Name, Map(currentGame));
+            await this.Clients.Group(room.Name).Refresh(room.Name, this.Map(currentGame));
         }
 
         public async Task Ready(string roomName)
@@ -97,7 +124,7 @@ namespace Agh.eSzachy.Hubs
             {
                 return await this.GameService.All(x);
             });
-            var result = ready.Map(x => x.Select(MapHistory).ToArray()).Match(x => x, e => throw e);
+            var result = ready.Map(x => x.Select(this.MapHistory).ToArray()).Match(x => x, e => throw e);
             return result;
         }
 

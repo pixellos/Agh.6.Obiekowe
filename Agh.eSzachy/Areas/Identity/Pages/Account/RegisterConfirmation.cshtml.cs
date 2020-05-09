@@ -18,8 +18,8 @@ namespace Agh.eSzachy.Areas.Identity.Pages.Account
 
         public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender)
         {
-            _userManager = userManager;
-            _sender = sender;
+            this._userManager = userManager;
+            this._sender = sender;
         }
 
         public string Email { get; set; }
@@ -32,31 +32,31 @@ namespace Agh.eSzachy.Areas.Identity.Pages.Account
         {
             if (email == null)
             {
-                return RedirectToPage("/Index");
+                return this.RedirectToPage("/Index");
             }
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await this._userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return NotFound($"Unable to load user with email '{email}'.");
+                return this.NotFound($"Unable to load user with email '{email}'.");
             }
 
-            Email = email;
+            this.Email = email;
             // Once you add a real email sender, you should remove this code that lets you confirm the account
-            DisplayConfirmAccountLink = true;
-            if (DisplayConfirmAccountLink)
+            this.DisplayConfirmAccountLink = true;
+            if (this.DisplayConfirmAccountLink)
             {
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var userId = await this._userManager.GetUserIdAsync(user);
+                var code = await this._userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                EmailConfirmationUrl = Url.Page(
+                this.EmailConfirmationUrl = this.Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
                     values: new { area = "Identity", userId = userId, code = code },
-                    protocol: Request.Scheme);
+                    protocol: this.Request.Scheme);
             }
 
-            return Page();
+            return this.Page();
         }
     }
 }

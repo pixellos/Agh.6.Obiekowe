@@ -10,6 +10,6 @@ namespace Agh.eSzachy.Hubs
     }
     public class ChessBoardHistory
     {
-        public Dictionary<DateTime, ChessBoard> History { get; set; }
+        public Dictionary<DateTime, ChessBoardDto> History { get; set; }
     }
 }

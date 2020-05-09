@@ -55,7 +55,7 @@ export class GameHub {
         return this.connection.invoke('Subscribe', roomName);
     }
 
-    map(model: ChessBoardModel): Promise<ChessBoard> {
+    map(model: ChessBoardModel): Promise<ChessBoardDto> {
         return this.connection.invoke('Map', model);
     }
 
@@ -89,7 +89,7 @@ export class GameHub {
 }
 
 export interface IGameHubCallbacks {
-    refresh(roomName: string, cb: ChessBoard): void;
+    refresh(roomName: string, cb: ChessBoardDto): void;
 }
 
 export interface Room {
@@ -111,13 +111,14 @@ export interface PawnPosition {
 }
 
 export interface ChessBoardModel {
+    PlayerOneName: string;
+    PlayerOneId: string;
+    PlayerTwoName: string;
+    PlayerTwoId: string;
+    CurrentPlayer: Player;
     Board: { [key: string]: BasePawn; };
     Started: Date;
     LastMove: Date;
-}
-
-export interface BasePawn {
-    player: Player;
 }
 
 export enum Player {
@@ -125,9 +126,26 @@ export enum Player {
     Two = 1,
 }
 
-export interface ChessBoard {
+export interface BasePawn {
+    player: Player;
+}
+
+export interface ChessBoardDto {
+    PlayerOne: PlayerDto;
+    PlayerTwo: PlayerDto;
+    Client: Client;
+    Player: Player;
     State: BoardState;
     Pawns: Pawn[];
+}
+
+export interface PlayerDto {
+    Id: string;
+    Name: string;
+}
+
+export interface Client {
+    Id: string;
 }
 
 export enum BoardState {
@@ -146,5 +164,5 @@ export interface Pawn {
 }
 
 export interface ChessBoardHistory {
-    History: { [key: string]: ChessBoard; };
+    History: { [key: string]: ChessBoardDto; };
 }

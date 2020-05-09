@@ -45,7 +45,7 @@ namespace Agh.eSzachy.Services
                 }
                 catch (Exception e)
                 {
-                    throw;
+                    throw e;
                 }
                 return new Result<Room>(Map(re));
             }
