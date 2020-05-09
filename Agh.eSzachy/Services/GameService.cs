@@ -202,7 +202,7 @@ namespace Agh.eSzachy.Services
             var seekedRoom = await this.RoomService.Get(room.Name);
             if (seekedRoom is Room r)
             {
-                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == room.Id);
+                var actualGame = ApplicationDbContext.Games.FirstOrDefault(x =>/* x.State == GameState.InPlay &&*/ x.RoomId == r.Id);
                 if (actualGame == null)
                 {
                     return this.Starting();
