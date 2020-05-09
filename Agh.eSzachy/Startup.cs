@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Text.Json;
+using Agh.eSzachy.Areas.Identity.Pages.Account;
 
 namespace Agh.eSzachy
 {
@@ -59,7 +60,8 @@ namespace Agh.eSzachy
                     ));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserStore<ApplicationUserStore>();
 
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
@@ -109,7 +111,7 @@ namespace Agh.eSzachy
             services.AddSignalR(x =>
             {
                 x.EnableDetailedErrors = true;
-            }).AddJsonProtocol(x=>x.PayloadSerializerOptions.PropertyNamingPolicy = null);
+            }).AddJsonProtocol(x => x.PayloadSerializerOptions.PropertyNamingPolicy = null);
 
             services.AddTransient<IUserIdProvider, EmailBasedUserIdProvider>();
             services.AddSingleton<IEmailSender, EmailSender>();

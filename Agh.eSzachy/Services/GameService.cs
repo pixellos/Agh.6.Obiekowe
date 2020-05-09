@@ -65,7 +65,7 @@ namespace Agh.eSzachy.Services
                         PlayerOneId = client.Id,
                         State = GameState.Waiting,
                         RoomId = r.Id,
-                        Moves = {}
+                        Moves = new List<MoveJsonEntity>()
                     };
                     ApplicationDbContext.Add(actualGame);
                     await ApplicationDbContext.SaveChangesAsync();
@@ -99,11 +99,7 @@ namespace Agh.eSzachy.Services
                 var actualGame = ApplicationDbContext.Games.FirstOrDefault(x =>/* x.State == GameState.InPlay*/ x.RoomId == room.Id);
                 if (actualGame == null)
                 {
-                    var items = new List<MoveJsonEntity>
-                    {
-                        new MoveJsonEntity(){ 
-                        Player = (Data.Player)7}
-                    };
+                    var items = new List<MoveJsonEntity>();
                     actualGame = new GameEntity
                     {
                         PlayerOneId = client.Id,

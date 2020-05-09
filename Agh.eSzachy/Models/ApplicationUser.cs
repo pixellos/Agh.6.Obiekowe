@@ -5,7 +5,5 @@ namespace Agh.eSzachy.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        [NotMapped]
-        public override string NormalizedUserName { get => base.Email; set => base.Email = value; }
     }
 }
