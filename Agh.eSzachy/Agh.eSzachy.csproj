@@ -48,6 +48,7 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\App.tsx" />
+    <None Remove="test.cd" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +61,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\App.tsx" />
+    <TypeScriptCompile Include="test.cd" />
   </ItemGroup>
   
   <!--<Target AfterTargets="AfterBuild" Name="Generate">

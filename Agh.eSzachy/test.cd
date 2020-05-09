@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Agh.eSzachy.Hubs.AuthorizedHub&lt;T&gt;" Collapsed="true">
+    <Position X="1.75" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Hubs\AuthorizedHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Hubs.GameHub" Collapsed="true">
+    <Position X="0.5" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAIJBAAAEgAAAAABAAEAACAAAAAAAAAAAEAQA=</HashCode>
+      <FileName>Hubs\GameHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Hubs.RoomHub" Collapsed="true">
+    <Position X="2.75" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAABAAAggAEAAABAAAAEAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Hubs\RoomHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Chess.BasePawn" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAACAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Chess\BasePawn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Chess.King" Collapsed="true">
+    <Position X="1" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Chess\King.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Chess.Knight" Collapsed="true">
+    <Position X="3.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Chess\Pawn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Chess.Pawn" Collapsed="true">
+    <Position X="5.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Chess\Pawn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Chess.Queen" Collapsed="true">
+    <Position X="7.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Chess\Queen.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Chess.Rook" Collapsed="true">
+    <Position X="10" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Chess\Rook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Chess.Bishop">
+    <Position X="12.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Chess\Runner.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.ApplicationUser" Collapsed="true">
+    <Position X="18.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ApplicationUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Board" Collapsed="true">
+    <Position X="20.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Models\Board.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Client" Collapsed="true">
+    <Position X="22" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Client.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Event" Collapsed="true">
+    <Position X="18.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Models\Event.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Game" Collapsed="true">
+    <Position X="20.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Game.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Message" Collapsed="true">
+    <Position X="22" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAQAAQAACAAAAAA=</HashCode>
+      <FileName>Models\Message.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Models.Room" Collapsed="true">
+    <Position X="18.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAQAAAAAAQAAAAA=</HashCode>
+      <FileName>Models\Room.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Services.ChessBoardModel" Collapsed="true">
+    <Position X="17.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAEAAACAAAAAAAAAAAAAIAAAAAAAAAhCABAAA=</HashCode>
+      <FileName>Services\ChessBoardModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agh.eSzachy.Services.GameService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEIAAACEgAACgAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Services\GameService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Agh.eSzachy.Services.RoomService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEABCBAAhAACAAAAEAAAAAAEAACAAAAAAAAAA=</HashCode>
+      <FileName>Services\RoomService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="Agh.eSzachy.Services.IGameService" Collapsed="true">
+    <Position X="17.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAEAAACAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Services\IGameService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Agh.eSzachy.Services.IRoomService" Collapsed="true">
+    <Position X="19.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAACAAAhAACAAAAAAAAAAAEAACAAAAAAAAAA=</HashCode>
+      <FileName>Services\IRoomService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Agh.eSzachy.Models.MessageType" Collapsed="true">
+    <Position X="18.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAFAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\MessageType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Agh.eSzachy.Services.GameStateModel" Collapsed="true">
+    <Position X="17.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAEAAQAAAAAA=</HashCode>
+      <FileName>Services\ChessBoardModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
