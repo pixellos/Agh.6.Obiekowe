@@ -7,7 +7,7 @@ import initialiseChessBoard from "../helpers/board-initialiser";
 import { GameHub, ChessBoardDto, BoardState, Player } from "../Api";
 import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import authService from "./api-authorization/AuthorizeService";
-import "./Game.css";
+import "./Game.module.css";
 
 type stateType = {
   squares: any[];
@@ -34,7 +34,7 @@ export class Game extends React.Component<any, stateType> {
       status: "",
       turn: "white",
       gameHub: null,
-      roomName: props.match?.params?.name || null,
+      roomName: props.roomName || props.match?.params?.name || null,
       chessBoard: null as ChessBoardDto,
     };
     this.state = s;
