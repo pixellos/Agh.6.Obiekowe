@@ -127,13 +127,7 @@ namespace Agh.eSzachy.Services
                     }
                 }
                 var player = actualGame.PlayerOneId == client.Id ? Player.One : actualGame.PlayerTwoId == client.Id ? Player.Two : throw new Exception("Player can be matched");
-
-                var board = this.Starting(actualGame);
-
-                foreach (var item in actualGame.Moves)
-                {
-                    board = UpdatePosition(board, item);
-                }
+                var board = Map(actualGame);
                 var mje = new MoveJsonEntity
                 {
                     From = new PositionEntity
@@ -152,12 +146,51 @@ namespace Agh.eSzachy.Services
                 actualGame.Moves.Add(mje);
                 actualGame.Moves = actualGame.Moves;
 
+                if(board.Board.Values.Count(x=>x is King) < 2)
+                {
+                    actualGame.State = GameState.Finished;
+                }
+
                 await this.ApplicationDbContext.SaveChangesAsync();
             }
             else
             {
                 throw new Exception("Client hadn't subscribed current room.");
             }
+        }
+        private ChessBoardHistoryModel MapHistory(GameEntity actualGame)
+        {
+            var dict = new Dictionary<DateTime, Dictionary<Position, BasePawn>>();
+            var board = this.Starting(actualGame);
+            dict.Add(board.Started, board.Board);
+            foreach (var item in actualGame.Moves)
+            {
+                board = UpdatePosition(board, item);
+                dict.Add(board.LastMove, board.Board);
+            }
+
+            return new ChessBoardHistoryModel
+            {
+                BoardInTime = dict,
+                PlayerOneId = board.PlayerOneId,
+                PlayerTwoId = board.PlayerTwoId,
+                PlayerOneName = board.PlayerOneName,
+                PlayerTwoName = board.PlayerTwoName,
+                LastMove = board.LastMove,
+                Started = board.Started,
+            };
+        }
+
+
+        private ChessBoardModel Map(GameEntity actualGame)
+        {
+            var board = this.Starting(actualGame);
+            foreach (var item in actualGame.Moves)
+            {
+                board = UpdatePosition(board, item);
+            }
+
+            return board;
         }
 
         private static ChessBoardModel UpdatePosition(ChessBoardModel board, MoveJsonEntity item)
@@ -204,11 +237,11 @@ namespace Agh.eSzachy.Services
             var seekedRoom = await this.RoomService.Get(room.Name);
             if (seekedRoom is Room r)
             {
-                var actualGame = this.ApplicationDbContext.Games.Include(x=>x.PlayerOne).Include(x=>x.PlayerTwo).FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == r.Id);
+                var actualGame = this.ApplicationDbContext.Games.Include(x => x.PlayerOne).Include(x => x.PlayerTwo).FirstOrDefault(x => x.State == GameState.InPlay && x.RoomId == r.Id);
                 if (actualGame == null)
                 {
-                    actualGame = this.ApplicationDbContext.Games.Include(x => x.PlayerOne).Include(x => x.PlayerTwo).FirstOrDefault(x => x.State == GameState.Waiting  && x.RoomId == r.Id);
-                    if(actualGame != null)
+                    actualGame = this.ApplicationDbContext.Games.Include(x => x.PlayerOne).Include(x => x.PlayerTwo).FirstOrDefault(x => x.State == GameState.Waiting && x.RoomId == r.Id);
+                    if (actualGame != null)
                     {
                         return this.Starting(actualGame);
                     }
@@ -216,12 +249,7 @@ namespace Agh.eSzachy.Services
                 }
                 else
                 {
-                    var board = this.Starting(actualGame);
-                    foreach (var item in actualGame.Moves)
-                    {
-                        board = UpdatePosition(board, item);
-                    }
-                    return board;
+                    return this.Map(actualGame);
                 }
             }
             else
@@ -230,9 +258,22 @@ namespace Agh.eSzachy.Services
             }
         }
 
-        public async Task<ChessBoardModel[]> All(Room room)
+        public async Task<ChessBoardHistoryModel[]> All(Room room)
         {
-            return new ChessBoardModel[] { };
+            var seekedRoom = await this.RoomService.Get(room.Name);
+            if (seekedRoom is Room r)
+            {
+                var actualGame = this.ApplicationDbContext.Games
+                    .Include(x => x.PlayerOne)
+                    .Include(x => x.PlayerTwo)
+                    .Where(x => x.State == GameState.Finished && x.RoomId == r.Id);
+
+                return actualGame.Select(this.MapHistory).ToArray();
+            }
+            else
+            {
+                return new ChessBoardHistoryModel[0];
+            }
         }
     }
 }

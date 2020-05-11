@@ -12,6 +12,6 @@ namespace Agh.eSzachy.Services
         Task Ready(Client client, Room room);
         Task Move(Client client, Room room, PawnPosition from, PawnPosition target);
         Task<ChessBoardModel> Current(Room room);
-        Task<ChessBoardModel[]> All(Room room);
+        Task<ChessBoardHistoryModel[]> All(Room room);
     }
 }

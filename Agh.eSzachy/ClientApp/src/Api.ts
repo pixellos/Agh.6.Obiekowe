@@ -59,7 +59,7 @@ export class GameHub {
         return this.connection.invoke('Map', model);
     }
 
-    mapHistory(model: ChessBoardModel): Promise<ChessBoardHistory> {
+    mapHistory(model: ChessBoardHistoryModel): Promise<ChessBoardHistory> {
         return this.connection.invoke('MapHistory', model);
     }
 
@@ -111,16 +111,9 @@ export interface PawnPosition {
     Col: number;
 }
 
-export interface ChessBoardModel {
-    PlayerOneName: string;
-    PlayerOneId: string;
-    PlayerTwoName: string;
-    PlayerTwoId: string;
+export interface ChessBoardModel extends ChessBoardBase {
     CurrentPlayer: Player;
     Board: { [key: string]: BasePawn; };
-    Started: Date;
-    LastMove: Date;
-    State: GameStateModel;
 }
 
 export enum Player {
@@ -130,6 +123,16 @@ export enum Player {
 
 export interface BasePawn {
     player: Player;
+}
+
+export interface ChessBoardBase {
+    PlayerOneName: string;
+    PlayerOneId: string;
+    PlayerTwoName: string;
+    PlayerTwoId: string;
+    Started: Date;
+    LastMove: Date;
+    State: GameStateModel;
 }
 
 export enum GameStateModel {
@@ -169,6 +172,10 @@ export interface Pawn {
     Type: string;
     Row: number;
     Col: number;
+}
+
+export interface ChessBoardHistoryModel extends ChessBoardBase {
+    BoardInTime: { [key: string]: { [key: string]: BasePawn; }; };
 }
 
 export interface ChessBoardHistory {

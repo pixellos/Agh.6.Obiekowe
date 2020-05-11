@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Agh.eSzachy.Models.Chess;
 using Agh.eSzachy.Services;
 using LanguageExt;
 using Microsoft.AspNetCore.Authorization;
@@ -61,7 +63,7 @@ namespace Agh.eSzachy.Hubs
 
         public ChessBoardDto Map(ChessBoardModel model)
         {
-
+            var pawn = MapPawns(model.Board);
             return new ChessBoardDto
             {
                 State = this.GetValue(model.State),
@@ -76,22 +78,38 @@ namespace Agh.eSzachy.Hubs
                     Id = model.PlayerTwoId
                 },
                 Player = model.CurrentPlayer,
-                Pawns = model.Board.Where(x => x.Value != null).Select(x => new Pawn
-                {
-                    Col = x.Key.Column,
-                    Row = x.Key.Row,
-                    IsPlayerOne = (x.Value?.player ?? Models.Chess.Player.One) == Models.Chess.Player.One,
-                    Type = x.Value.GetType().Name
-                }).ToArray()
+                Pawns = pawn
             };
         }
 
-        public ChessBoardHistory MapHistory(ChessBoardModel model)
-        {
-            return new ChessBoardHistory
-            {
+        private Pawn[] MapPawns(Dictionary<Position, BasePawn> model) =>
+                    model.Where(x => x.Value != null).Select(x => new Pawn
+                    {
+                        Col = x.Key.Column,
+                        Row = x.Key.Row,
+                        IsPlayerOne = (x.Value?.player ?? Models.Chess.Player.One) == Models.Chess.Player.One,
+                        Type = x.Value.GetType().Name
+                    }).ToArray();
 
-            };
+        public ChessBoardHistory MapHistory(ChessBoardHistoryModel model)
+        {
+            var result = new ChessBoardHistory();
+            result.History = model.BoardInTime.ToDictionary(x => x.Key, x => new ChessBoardDto
+            {
+                Pawns = this.MapPawns(x.Value),
+                State = this.GetValue(model.State),
+                PlayerOne = new PlayerDto
+                {
+                    Id = model.PlayerOneId,
+                    Name = model.PlayerOneName
+                },
+                PlayerTwo = new PlayerDto
+                {
+                    Name = model.PlayerTwoName,
+                    Id = model.PlayerTwoId
+                },
+            });
+            return result;
         }
 
         public async Task Refresh(Models.Room room)
