@@ -1,13 +1,21 @@
-import React from "react";
+import React, { ReactElement } from "react";
+import Square from "./Square";
 
-import Square from "./Square.js";
+const isEven = (num) => num % 2 === 0;
 
-export default class Board extends React.Component {
+type BoardProps = {
+  squares: {
+    style: Record<string, string>;
+  }[];
+  onClick: Function;
+};
+
+export default class Board extends React.Component<BoardProps> {
   render() {
-    const board = [];
+    const board: ReactElement[] = [];
 
     for (let column = 0; column < 8; column++) {
-      const squareRows = [];
+      const squareRows: ReactElement[] = [];
 
       for (let row = 0; row < 8; row++) {
         const squareShade =
@@ -38,8 +46,4 @@ export default class Board extends React.Component {
 
     return <div>{board}</div>;
   }
-}
-
-function isEven(num) {
-  return num % 2 === 0;
 }

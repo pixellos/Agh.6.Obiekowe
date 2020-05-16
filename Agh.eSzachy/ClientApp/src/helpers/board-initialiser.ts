@@ -1,11 +1,10 @@
-import Bishop from "../pieces/Bishop.js";
-import King from "../pieces/King.js";
-import Knight from "../pieces/Knight.js";
-import Pawn from "../pieces/Pawn.js";
-import Queen from "../pieces/Queen.js";
-import Rook from "../pieces/Rook.js";
-import Piece from "../pieces/Piece.js";
-import { ChessBoardDto } from "../Api";
+import Bishop from "../pieces/Bishop";
+import King from "../pieces/King";
+import Knight from "../pieces/Knight";
+import Pawn from "../pieces/Pawn";
+import Queen from "../pieces/Queen";
+import Rook from "../pieces/Rook";
+import { ChessBoardDto, Player } from "../Api";
 
 type initialiseChessBoardParams = {
   chessBoard: ChessBoardDto;
@@ -20,7 +19,7 @@ export default function initialiseChessBoard({
 
   chessBoard.Pawns.forEach((pawn) => {
     const index = pawn.Row * 8 + pawn.Col;
-    const player = pawn.IsPlayerOne ? 2 : 1;
+    const player = pawn.IsPlayerOne ? Player.Two : Player.One;
 
     let pieceClass = null as any;
 

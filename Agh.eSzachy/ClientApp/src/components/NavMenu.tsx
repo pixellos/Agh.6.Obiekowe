@@ -12,22 +12,19 @@ import { Link } from "react-router-dom";
 import { LoginMenu } from "./api-authorization/LoginMenu";
 import "./NavMenu.css";
 
-export class NavMenu extends Component {
+type NavMenuState = {
+  collapsed: boolean;
+};
+
+export class NavMenu extends Component<any, NavMenuState> {
   static displayName = NavMenu.name;
 
   constructor(props) {
     super(props);
 
-    this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
       collapsed: true,
     };
-  }
-
-  toggleNavbar() {
-    this.setState({
-      collapsed: !this.state.collapsed,
-    });
   }
 
   render() {
@@ -41,7 +38,14 @@ export class NavMenu extends Component {
             <NavbarBrand tag={Link} to="/">
               Agh.eSzachy
             </NavbarBrand>
-            <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
+            <NavbarToggler
+              onClick={() => {
+                this.setState({
+                  collapsed: !this.state.collapsed,
+                });
+              }}
+              className="mr-2"
+            />
             <Collapse
               className="d-sm-inline-flex flex-sm-row-reverse"
               isOpen={!this.state.collapsed}

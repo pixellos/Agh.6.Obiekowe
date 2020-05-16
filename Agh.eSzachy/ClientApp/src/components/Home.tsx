@@ -36,7 +36,7 @@ export const Home = withRouter(({ history }) => {
         refresh: async (r: Room[]) => {
           setUserRooms(r);
           setSelected((oldSelected) => {
-            const candidate = r.find((x) => x.Id == oldSelected?.Id);
+            const candidate = r.find((x) => x.Id === oldSelected?.Id);
             if (candidate) {
               return candidate;
             } else {

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from "react";
 
-import Board from "./Board.js";
+import Board from "./Board";
 import FallenSoldierBlock from "./FallenSoldierBlock";
 import initialiseChessBoard from "../helpers/board-initialiser";
 import { GameHub, ChessBoardDto, BoardState, Player } from "../Api";
@@ -9,7 +9,7 @@ import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import authService from "./api-authorization/AuthorizeService";
 import "./Game.module.css";
 
-type stateType = {
+type GameState = {
   squares: any[];
   whiteFallenSoldiers: never[];
   blackFallenSoldiers: never[];
@@ -22,14 +22,14 @@ type stateType = {
   chessBoard: ChessBoardDto;
 };
 
-export class Game extends React.Component<any, stateType> {
+export class Game extends React.Component<any, GameState> {
   constructor(props) {
     super(props);
     const s = {
       squares: Array(64).fill(null),
       whiteFallenSoldiers: [],
       blackFallenSoldiers: [],
-      player: 1,
+      player: Player.One,
       sourceSelection: -1,
       status: "",
       turn: "white",
@@ -145,7 +145,7 @@ export class Game extends React.Component<any, stateType> {
 
         if (isMovePossible && isMoveLegal) {
           if (squares[i] !== null) {
-            if (squares[i].player === 1) {
+            if (squares[i].player === Player.One) {
               whiteFallenSoldiers.push(squares[i]);
             } else {
               blackFallenSoldiers.push(squares[i]);
@@ -170,7 +170,8 @@ export class Game extends React.Component<any, stateType> {
             console.debug("move", e);
           }
 
-          const player = this.state.player === 1 ? 2 : 1;
+          const player =
+            this.state.player === Player.One ? Player.Two : Player.One;
           const turn = this.state.turn === "white" ? "black" : "white";
           this.setState({
             sourceSelection: -1,
@@ -209,13 +210,13 @@ export class Game extends React.Component<any, stateType> {
 
   render() {
     const playerSection = (
-      <div class="grid-container">
-        <div class="grid-item">
+      <div className="grid-container">
+        <div className="grid-item">
           <div id="player-turn-box" style={{ backgroundColor: "white" }}></div>
           <div>First Player:</div>
           <div>{this.state.chessBoard?.PlayerOne?.Name}</div>
         </div>
-        <div class="grid-item">
+        <div className="grid-item">
           <div id="player-turn-box" style={{ backgroundColor: "black" }}></div>
           <div>Second Player:</div>
           <div>{this.state.chessBoard?.PlayerTwo?.Name}</div>
@@ -224,7 +225,7 @@ export class Game extends React.Component<any, stateType> {
     );
 
     const content =
-      this.state?.chessBoard?.State != BoardState.Started ? (
+      this.state?.chessBoard?.State !== BoardState.Started ? (
         <div>
           <button
             onClick={() => {
@@ -246,7 +247,7 @@ export class Game extends React.Component<any, stateType> {
           <div className="game-info">
             <h3>
               Turn{" "}
-              {this.state.chessBoard.Player == Player.One
+              {this.state.chessBoard.Player === Player.One
                 ? this.state.chessBoard.PlayerOne.Name
                 : this.state.chessBoard.PlayerTwo.Name}
             </h3>
