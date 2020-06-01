@@ -11,21 +11,20 @@ import { ApplicationPaths } from "./components/api-authorization/ApiAuthorizatio
 import { Game } from "./components/Game";
 
 import "./custom.css";
-
-export default class App extends Component {
+class App extends Component {
   static displayName = App.name;
 
-  render() {
-    return (
-      <Layout>
-        <AuthorizeRoute exact path="/" component={Home} />
-        <AuthorizeRoute path="/room/:name" component={Game} />
+  render = () => (
+    <Layout>
+      <AuthorizeRoute exact path="/" component={Home} />
+      <AuthorizeRoute path="/room/:name" component={Game} />
 
-        <Route
-          path={ApplicationPaths.ApiAuthorizationPrefix}
-          component={ApiAuthorizationRoutes}
-        />
-      </Layout>
-    );
-  }
+      <Route
+        path={ApplicationPaths.ApiAuthorizationPrefix}
+        component={ApiAuthorizationRoutes}
+      />
+    </Layout>
+  );
 }
+
+export default App;

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import { RoomHub, Room } from "../Api";
 import { Game } from "./Game";
 import authService from "./api-authorization/AuthorizeService";
-import * as css from "./Home.module.css";
+// import * as css from "./Home.module.css";
 import { withRouter } from "react-router-dom";
 
 export const Home = withRouter(({ history }) => {
@@ -15,6 +15,7 @@ export const Home = withRouter(({ history }) => {
   const [newRoom, setNewRoom] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [selected, setSelected] = useState<Room | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -26,6 +27,10 @@ export const Home = withRouter(({ history }) => {
       if (typeof token !== "string") {
         throw new Error();
       }
+
+      const user = await authService.getUser();
+
+      setUserId(user.sub);
 
       const c = new HubConnectionBuilder()
         .withUrl("/room", { accessTokenFactory: () => token })
@@ -130,7 +135,7 @@ export const Home = withRouter(({ history }) => {
     selected ? (
       <div style={{ display: "inline-flex" }}>
         <div style={{ width: "1200px", display: "inline-block" }}>
-          <Game roomName={selected.Name} />
+          <Game roomName={selected.Name} userId={userId} />
         </div>
         <div style={{ width: "300px", display: "inline-block" }}>
           Messages

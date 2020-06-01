@@ -42,11 +42,19 @@ ol, ul {
   font-weight: bold;
   line-height: 34px;
   height: 48px;
-  margin-right: -1px;
-  margin-top: -1px;
+  /* margin-right: -1px;
+  margin-top: -1px; */
   padding: 0;
   text-align: center;
   width: 48px;
+}
+
+.square.selected {
+  background-color: rgb(111, 143, 114);
+}
+
+.square.available {
+  border: 1px solid rgb(255, 0, 0);
 }
 
 .square:focus {
@@ -76,11 +84,11 @@ ol, ul {
 
 /*Board color scheme Wheat from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html*/
 .dark-square{
-background-color: RGB(187,190,100);
+  background-color: rgb(187,190,100);
 }
 
 .light-square{
-    background-color: RGB(234,240,206);
+  background-color: rgb(234,240,206);
 }
 
 #player-turn-box{

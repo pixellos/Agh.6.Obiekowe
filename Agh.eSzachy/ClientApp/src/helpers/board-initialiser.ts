@@ -12,50 +12,55 @@ type initialiseChessBoardParams = {
   playerTwoColor: number;
 };
 
-export default function initialiseChessBoard({
-  chessBoard,
-}: initialiseChessBoardParams) {
-  const squares = Array(64).fill(null);
+const initialiseChessBoard = ({ chessBoard }: initialiseChessBoardParams) => {
+  const squares = Array.from({ length: 64 }, () => ({
+    className: "",
+    available: false,
+    piece: null,
+  }));
 
   chessBoard.Pawns.forEach((pawn) => {
     const index = pawn.Row * 8 + pawn.Col;
     const player = pawn.IsPlayerOne ? Player.Two : Player.One;
 
-    let pieceClass = null as any;
+    let PieceClass = null as any;
 
     switch (pawn.Type) {
       case "Pawn":
-        pieceClass = Pawn;
+        PieceClass = Pawn;
         break;
 
       case "Rook":
-        pieceClass = Rook;
+        PieceClass = Rook;
         break;
 
       case "Knight":
-        pieceClass = Knight;
+        PieceClass = Knight;
         break;
 
       case "Bishop":
-        pieceClass = Bishop;
+        PieceClass = Bishop;
         break;
 
       case "Queen":
-        pieceClass = Queen;
+        PieceClass = Queen;
         break;
 
       case "King":
-        pieceClass = King;
+        PieceClass = King;
         break;
 
       default:
         break;
     }
 
-    if (pieceClass) {
-      squares[index] = new pieceClass(player);
+    if (PieceClass) {
+      const piece = new PieceClass(player);
+      squares[index].piece = piece;
     }
   });
 
   return squares;
-}
+};
+
+export default initialiseChessBoard;

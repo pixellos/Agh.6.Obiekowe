@@ -1,49 +1,53 @@
 import React, { ReactElement } from "react";
+import classNames from "classnames";
 import Square from "./Square";
 
-const isEven = (num) => num % 2 === 0;
+const isEven = (num: number) => num % 2 === 0;
 
 type BoardProps = {
   squares: {
-    style: Record<string, string>;
+    className: string;
+    piece: {
+      backgroundImage: string;
+    } | null;
   }[];
   onClick: Function;
 };
 
-export default class Board extends React.Component<BoardProps> {
-  render() {
-    const board: ReactElement[] = [];
+const Board = ({ squares, onClick }: BoardProps) => {
+  const board: ReactElement[] = [];
 
-    for (let column = 0; column < 8; column++) {
-      const squareRows: ReactElement[] = [];
+  for (let column = 0; column < 8; column++) {
+    const squareRows: ReactElement[] = [];
 
-      for (let row = 0; row < 8; row++) {
-        const squareShade =
-          (isEven(column) && isEven(row)) || (!isEven(column) && !isEven(row))
-            ? "light-square"
-            : "dark-square";
+    for (let row = 0; row < 8; row++) {
+      const squareShade =
+        (isEven(column) && isEven(row)) || (!isEven(column) && !isEven(row))
+          ? "light-square"
+          : "dark-square";
 
-        const index = column * 8 + row;
+      const index = column * 8 + row;
 
-        squareRows.push(
-          <Square
-            style={
-              this.props.squares[index] ? this.props.squares[index].style : null
-            }
-            shade={squareShade}
-            onClick={() => this.props.onClick(index)}
-            key={row}
-          />
-        );
-      }
-
-      board.push(
-        <div className="board-row" key={column}>
-          {squareRows}
-        </div>
+      squareRows.push(
+        <Square
+          style={{
+            backgroundImage: squares[index].piece?.backgroundImage,
+          }}
+          className={classNames(squares[index].className, squareShade)}
+          onClick={() => onClick(index)}
+          key={row}
+        />
       );
     }
 
-    return <div>{board}</div>;
+    board.push(
+      <div className="board-row" key={column}>
+        {squareRows}
+      </div>
+    );
   }
-}
+
+  return <div>{board}</div>;
+};
+
+export default Board;

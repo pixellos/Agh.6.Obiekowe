@@ -1,183 +1,187 @@
-import { HubConnection, IStreamResult } from "@aspnet/signalr"
+import { HubConnection /*, IStreamResult*/ } from "@aspnet/signalr";
 
 export class RoomHub {
-    constructor(private connection: HubConnection) {
-    }
+  constructor(private connection: HubConnection) {}
 
-    create(roomName: string): Promise<void> {
-        return this.connection.invoke('Create', roomName);
-    }
+  create(roomName: string): Promise<void> {
+    return this.connection.invoke("Create", roomName);
+  }
 
-    join(roomName: string): Promise<void> {
-        return this.connection.invoke('Join', roomName);
-    }
+  join(roomName: string): Promise<void> {
+    return this.connection.invoke("Join", roomName);
+  }
 
-    leave(roomName: string): Promise<void> {
-        return this.connection.invoke('Leave', roomName);
-    }
+  leave(roomName: string): Promise<void> {
+    return this.connection.invoke("Leave", roomName);
+  }
 
-    getAllRooms(): Promise<string[]> {
-        return this.connection.invoke('GetAllRooms');
-    }
+  getAllRooms(): Promise<string[]> {
+    return this.connection.invoke("GetAllRooms");
+  }
 
-    send(roomId: string, message: string): Promise<void> {
-        return this.connection.invoke('Send', roomId, message);
-    }
+  send(roomId: string, message: string): Promise<void> {
+    return this.connection.invoke("Send", roomId, message);
+  }
 
-    registerCallbacks(implementation: IRoomHubCallbacks) {
-        this.connection.on('RefreshSingle', (r) => implementation.refreshSingle(r));
-        this.connection.on('Refresh', (r) => implementation.refresh(r));
-        this.connection.on('Send', (message) => implementation.send(message));
-    }
+  registerCallbacks(implementation: IRoomHubCallbacks) {
+    this.connection.on("RefreshSingle", (r) => implementation.refreshSingle(r));
+    this.connection.on("Refresh", (r) => implementation.refresh(r));
+    this.connection.on("Send", (message) => implementation.send(message));
+  }
 
-    unregisterCallbacks(implementation: IRoomHubCallbacks) {
-        this.connection.off('RefreshSingle', (r) => implementation.refreshSingle(r));
-        this.connection.off('Refresh', (r) => implementation.refresh(r));
-        this.connection.off('Send', (message) => implementation.send(message));
-    }
+  unregisterCallbacks(implementation: IRoomHubCallbacks) {
+    this.connection.off("RefreshSingle", (r) =>
+      implementation.refreshSingle(r)
+    );
+    this.connection.off("Refresh", (r) => implementation.refresh(r));
+    this.connection.off("Send", (message) => implementation.send(message));
+  }
 }
 
 export interface IRoomHubCallbacks {
-    refreshSingle(r: Room): void;
-    refresh(r: Room[]): void;
-    send(message: string): void;
+  refreshSingle(r: Room): void;
+  refresh(r: Room[]): void;
+  send(message: string): void;
 }
 
 export class GameHub {
-    constructor(private connection: HubConnection) {
-    }
+  constructor(private connection: HubConnection) {}
 
-    move(roomName: string, from: PawnPosition, to: PawnPosition): Promise<void> {
-        return this.connection.invoke('Move', roomName, from, to);
-    }
+  move(roomName: string, from: PawnPosition, to: PawnPosition): Promise<void> {
+    return this.connection.invoke("Move", roomName, from, to);
+  }
 
-    subscribe(roomName: string): Promise<void> {
-        return this.connection.invoke('Subscribe', roomName);
-    }
+  subscribe(roomName: string): Promise<void> {
+    return this.connection.invoke("Subscribe", roomName);
+  }
 
-    map(model: ChessBoardModel): Promise<ChessBoardDto> {
-        return this.connection.invoke('Map', model);
-    }
+  map(model: ChessBoardModel): Promise<ChessBoardDto> {
+    return this.connection.invoke("Map", model);
+  }
 
-    mapHistory(model: ChessBoardHistoryModel): Promise<ChessBoardHistory> {
-        return this.connection.invoke('MapHistory', model);
-    }
+  mapHistory(model: ChessBoardHistoryModel): Promise<ChessBoardHistory> {
+    return this.connection.invoke("MapHistory", model);
+  }
 
-    refresh(room: Room): Promise<void> {
-        return this.connection.invoke('Refresh', room);
-    }
+  refresh(room: Room): Promise<void> {
+    return this.connection.invoke("Refresh", room);
+  }
 
-    ready(roomName: string): Promise<void> {
-        return this.connection.invoke('Ready', roomName);
-    }
+  ready(roomName: string): Promise<void> {
+    return this.connection.invoke("Ready", roomName);
+  }
 
-    historicalFor(roomName: string): Promise<ChessBoardHistory[]> {
-        return this.connection.invoke('HistoricalFor', roomName);
-    }
+  historicalFor(roomName: string): Promise<ChessBoardHistory[]> {
+    return this.connection.invoke("HistoricalFor", roomName);
+  }
 
-    surrender(roomName: string): Promise<void> {
-        return this.connection.invoke('Surrender', roomName);
-    }
+  surrender(roomName: string): Promise<void> {
+    return this.connection.invoke("Surrender", roomName);
+  }
 
-    registerCallbacks(implementation: IGameHubCallbacks) {
-        this.connection.on('Refresh', (roomName, cb) => implementation.refresh(roomName, cb));
-    }
+  registerCallbacks(implementation: IGameHubCallbacks) {
+    this.connection.on("Refresh", (roomName, cb) =>
+      implementation.refresh(roomName, cb)
+    );
+  }
 
-    unregisterCallbacks(implementation: IGameHubCallbacks) {
-        this.connection.off('Refresh', (roomName, cb) => implementation.refresh(roomName, cb));
-    }
+  unregisterCallbacks(implementation: IGameHubCallbacks) {
+    this.connection.off("Refresh", (roomName, cb) =>
+      implementation.refresh(roomName, cb)
+    );
+  }
 }
 
 export interface IGameHubCallbacks {
-    refresh(roomName: string, cb: ChessBoardDto): void;
+  refresh(roomName: string, cb: ChessBoardDto): void;
 }
 
 export interface Room {
-    Messages: Message[];
-    Id: string;
-    Name: string;
-    Created: Date;
+  Messages: Message[];
+  Id: string;
+  Name: string;
+  Created: Date;
 }
 
 export interface Message {
-    Text: string;
-    UserId: string;
-    Created: Date;
-    UserName: string | undefined;
+  Text: string;
+  UserId: string;
+  Created: Date;
+  UserName: string | undefined;
 }
 
 export interface PawnPosition {
-    Row: number;
-    Col: number;
+  Row: number;
+  Col: number;
 }
 
 export interface ChessBoardModel extends ChessBoardBase {
-    CurrentPlayer: Player;
-    Board: { [key: string]: BasePawn; };
+  CurrentPlayer: Player;
+  Board: { [key: string]: BasePawn };
 }
 
 export enum Player {
-    One = 0,
-    Two = 1,
+  One = 0,
+  Two = 1,
 }
 
 export interface BasePawn {
-    player: Player;
+  player: Player;
 }
 
 export interface ChessBoardBase {
-    PlayerOneName: string;
-    PlayerOneId: string;
-    PlayerTwoName: string;
-    PlayerTwoId: string;
-    Started: Date;
-    LastMove: Date;
-    State: GameStateModel;
+  PlayerOneName: string;
+  PlayerOneId: string;
+  PlayerTwoName: string;
+  PlayerTwoId: string;
+  Started: Date;
+  LastMove: Date;
+  State: GameStateModel;
 }
 
 export enum GameStateModel {
-    Waiting = 0,
-    InPlay = 1,
-    Finished = 2,
+  Waiting = 0,
+  InPlay = 1,
+  Finished = 2,
 }
 
 export interface ChessBoardDto {
-    PlayerOne: PlayerDto;
-    PlayerTwo: PlayerDto;
-    Client: Client;
-    Player: Player;
-    State: BoardState;
-    Pawns: Pawn[];
+  PlayerOne: PlayerDto;
+  PlayerTwo: PlayerDto;
+  Client: Client;
+  Player: Player;
+  State: BoardState;
+  Pawns: Pawn[];
 }
 
 export interface PlayerDto {
-    Id: string;
-    Name: string;
+  Id: string;
+  Name: string;
 }
 
 export interface Client {
-    Id: string;
+  Id: string;
 }
 
 export enum BoardState {
-    Idle = 0,
-    PlayerOneWins = 1,
-    PlayerTwoWins = 2,
-    Started = 3,
-    Draw = 4,
+  Idle = 0,
+  PlayerOneWins = 1,
+  PlayerTwoWins = 2,
+  Started = 3,
+  Draw = 4,
 }
 
 export interface Pawn {
-    IsPlayerOne: boolean;
-    Type: string;
-    Row: number;
-    Col: number;
+  IsPlayerOne: boolean;
+  Type: string;
+  Row: number;
+  Col: number;
 }
 
 export interface ChessBoardHistoryModel extends ChessBoardBase {
-    BoardInTime: { [key: string]: { [key: string]: BasePawn; }; };
+  BoardInTime: { [key: string]: { [key: string]: BasePawn } };
 }
 
 export interface ChessBoardHistory {
-    History: { [key: string]: ChessBoardDto; };
+  History: { [key: string]: ChessBoardDto };
 }

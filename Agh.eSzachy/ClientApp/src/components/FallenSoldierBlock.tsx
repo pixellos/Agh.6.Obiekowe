@@ -6,17 +6,30 @@ type FallenSoldierBlockProps = {
   blackFallenSoldiers: any[];
 };
 
-const FallenSoldierBlock = (props: FallenSoldierBlockProps): ReactElement => (
+const FallenSoldierBlock = ({
+  whiteFallenSoldiers,
+  blackFallenSoldiers,
+}: FallenSoldierBlockProps): ReactElement => (
   <div>
     <div className="board-row">
-      {props.whiteFallenSoldiers.map((piece) => (
-        <Square piece={piece} style={piece.style} />
+      {whiteFallenSoldiers.map((piece, index) => (
+        <Square
+          style={{
+            backgroundImage: piece.backgroundImage,
+          }}
+          key={index}
+        />
       ))}
     </div>
 
     <div className="board-row">
-      {props.blackFallenSoldiers.map((piece) => (
-        <Square piece={piece} style={piece.style} />
+      {blackFallenSoldiers.map((piece, index) => (
+        <Square
+          style={{
+            backgroundImage: piece.backgroundImage,
+          }}
+          key={index}
+        />
       ))}
     </div>
   </div>
