@@ -3,7 +3,7 @@ import { HubConnectionBuilder, HubConnectionState } from "@aspnet/signalr";
 import { RoomHub, Room } from "../Api";
 import { Game } from "./Game";
 import authService from "./api-authorization/AuthorizeService";
-// import * as css from "./Home.module.css";
+import styles from "./Home.module.css";
 import { withRouter } from "react-router-dom";
 
 export const Home = withRouter(({ history }) => {
@@ -15,7 +15,6 @@ export const Home = withRouter(({ history }) => {
   const [newRoom, setNewRoom] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [selected, setSelected] = useState<Room | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -27,10 +26,6 @@ export const Home = withRouter(({ history }) => {
       if (typeof token !== "string") {
         throw new Error();
       }
-
-      const user = await authService.getUser();
-
-      setUserId(user.sub);
 
       const c = new HubConnectionBuilder()
         .withUrl("/room", { accessTokenFactory: () => token })
@@ -48,12 +43,12 @@ export const Home = withRouter(({ history }) => {
               return oldSelected;
             }
           });
+
           const rooms = await roomHub.getAllRooms();
           setRoomList(rooms);
         },
         refreshSingle: (room) => {
-          // history.push(`/room/${room.Name}`);
-          // console.log("registerCallbacks.refreshSingle", room);
+          console.log("registerCallbacks.refreshSingle", room);
         },
         send: (m) => {},
       });
@@ -69,73 +64,11 @@ export const Home = withRouter(({ history }) => {
     })();
   }, [hub, history]);
 
-  const renderRooms = () => {
-    return (
-      <>
-        <div className="grid-item">
-          <h2>Rooms</h2>
-          <div>
-            <input
-              type="text"
-              onChange={(x) => {
-                setNewRoom(x.target.value);
-              }}
-            />
-            <span>
-              <button
-                onClick={(x) => {
-                  if (newRoom === "" || !hub) {
-                    return;
-                  }
-                  hub.create(newRoom);
-                  setNewRoom("");
-                }}
-              >
-                Create new room
-              </button>
-            </span>
-          </div>
-        </div>
-
-        <div className="grid-item">
-          {roomList.map((roomName, index) => (
-            <div key={index}>
-              <span>
-                <button onClick={(x) => hub && hub.join(roomName)}>Join</button>
-              </span>
-              <span>Room: {roomName}</span>
-            </div>
-          ))}
-        </div>
-        <div className="grid-item">
-          <h2>User Rooms</h2>
-          {userRooms.map((room, index) => (
-            <div key={index}>
-              <span>
-                <button onClick={(x) => hub && hub.join(room.Name)}>
-                  Join
-                </button>
-                <button
-                  onClick={(x) => {
-                    setSelected(room);
-                  }}
-                >
-                  Select
-                </button>
-              </span>
-              <span>Room: {room.Name}</span>
-            </div>
-          ))}
-        </div>
-      </>
-    );
-  };
-
   const renderSelected = () =>
     selected ? (
       <div style={{ display: "inline-flex" }}>
         <div style={{ width: "1200px", display: "inline-block" }}>
-          <Game roomName={selected.Name} userId={userId} />
+          <Game roomName={selected.Name} />
         </div>
         <div style={{ width: "300px", display: "inline-block" }}>
           Messages
@@ -171,8 +104,57 @@ export const Home = withRouter(({ history }) => {
 
   return (
     <>
-      <div className="grid-container">{renderRooms()}</div>
-      <div className="grid-container">{renderSelected()}</div>
+      <h2 className={styles.Title}>All rooms</h2>
+      <div className={styles.Rooms}>
+        {roomList.map((roomName, index) => (
+          <div className={styles.Room} key={index}>
+            <span className={styles.RoomName}>{roomName}</span>
+            <button
+              className={styles.Button}
+              onClick={(x) => hub && hub.join(roomName)}
+            >
+              Join
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <input
+        type="text"
+        onChange={(x) => {
+          setNewRoom(x.target.value);
+        }}
+      />
+      <button
+        className={styles.Button}
+        onClick={(x) => {
+          if (newRoom === "" || !hub) {
+            return;
+          }
+          hub.create(newRoom);
+          setNewRoom("");
+        }}
+      >
+        Create new room
+      </button>
+
+      <h2 className={styles.Title}>User Rooms</h2>
+      {userRooms.map((room, index) => (
+        <div className={styles.Room} key={index}>
+          {/* <span>
+            <button className={styles.Button} onClick={(x) => hub && hub.join(room.Name)}>Join</button>
+          </span> */}
+          <span className={styles.RoomName}>{room.Name}</span>
+          <button
+            className={styles.Button}
+            onClick={(x) => {
+              history.push(`/room/${room.Name}`);
+            }}
+          >
+            Open
+          </button>
+        </div>
+      ))}
     </>
   );
 });

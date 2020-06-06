@@ -60,7 +60,7 @@ const initialiseChessBoard = ({ chessBoard }: initialiseChessBoardParams) => {
     }
   });
 
-  return squares;
+  return { squares };
 };
 
 export default initialiseChessBoard;

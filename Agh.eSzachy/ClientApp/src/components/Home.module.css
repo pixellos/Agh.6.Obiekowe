@@ -1,12 +1,24 @@
-.grid-container {
-  display: grid;
-  grid-column-gap: 50px;
-  grid-template-columns: auto auto auto;
-  padding: 10px;
+.Title {
+  font-size: 20px;
+  margin: 15px 0;
 }
 
-.grid-item {
-  padding: 20px;
-  font-size: 30px;
-  text-align: center;
+.Room {
+  padding: 10px 0;
+  max-width: 290px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc
+}
+
+.Room:last-child {
+  border-bottom: none;
+}
+
+.RoomName {
+  margin-right: 10px;
+}
+
+.Button {
+  max-height: 25px;
 }

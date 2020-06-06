@@ -1,5 +1,4 @@
 import React, { ReactElement } from "react";
-import Square from "./Square";
 
 type FallenSoldierBlockProps = {
   whiteFallenSoldiers: any[];
@@ -13,7 +12,7 @@ const FallenSoldierBlock = ({
   <div>
     <div className="board-row">
       {whiteFallenSoldiers.map((piece, index) => (
-        <Square
+        <div
           style={{
             backgroundImage: piece.backgroundImage,
           }}
@@ -24,7 +23,7 @@ const FallenSoldierBlock = ({
 
     <div className="board-row">
       {blackFallenSoldiers.map((piece, index) => (
-        <Square
+        <div
           style={{
             backgroundImage: piece.backgroundImage,
           }}
