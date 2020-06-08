@@ -105,9 +105,11 @@ export class Game extends React.Component<any, GameState> {
             }),
           });
 
-          this.messagesRef.current.scrollTo({
-            top: this.messagesRef.current.scrollHeight,
-          });
+          if (this.messagesRef.current) {
+            this.messagesRef.current.scrollTo({
+              top: this.messagesRef.current.scrollHeight,
+            });
+          }
         },
       });
 
@@ -265,24 +267,33 @@ export class Game extends React.Component<any, GameState> {
         </div>
 
         <div className={styles.Players}>
-          <div
-            className={classNames(styles.PlayerInfo, {
-              [styles.PlayerSelected]:
-                this.state.chessBoard?.Player === Player.One,
-            })}
-          >
-            <div className={classNames(styles.PlayerColor, styles.White)}></div>
-            <div>{this.state.chessBoard?.PlayerOne?.Name}</div>
-          </div>
-          <div
-            className={classNames(styles.PlayerInfo, {
-              [styles.PlayerSelected]:
-                this.state.chessBoard?.Player === Player.Two,
-            })}
-          >
-            <div className={classNames(styles.PlayerColor, styles.Black)}></div>
-            <div>{this.state.chessBoard?.PlayerTwo?.Name}</div>
-          </div>
+          {this.state.chessBoard?.PlayerOne?.Name && (
+            <div
+              className={classNames(styles.PlayerInfo, {
+                [styles.PlayerSelected]:
+                  this.state.chessBoard?.Player === Player.One,
+              })}
+            >
+              <div
+                className={classNames(styles.PlayerColor, styles.White)}
+              ></div>
+              <div>{this.state.chessBoard?.PlayerOne?.Name}</div>
+            </div>
+          )}
+
+          {this.state.chessBoard?.PlayerTwo?.Name && (
+            <div
+              className={classNames(styles.PlayerInfo, {
+                [styles.PlayerSelected]:
+                  this.state.chessBoard?.Player === Player.Two,
+              })}
+            >
+              <div
+                className={classNames(styles.PlayerColor, styles.Black)}
+              ></div>
+              <div>{this.state.chessBoard?.PlayerTwo?.Name}</div>
+            </div>
+          )}
         </div>
 
         {(!hasGameStarted && (
